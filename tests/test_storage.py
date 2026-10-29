@@ -12,9 +12,9 @@ import sqlite3
 
 import pytest
 
-from canlah_healthcheck.checker.checker import Attempt, CheckResult
-from canlah_healthcheck.config.load_config import ScheduleSettings
-from canlah_healthcheck.storage.storage import DuplicateRunError, Storage, StorageError
+from website_healthcheck.checker.checker import Attempt, CheckResult
+from website_healthcheck.config.load_config import ScheduleSettings
+from website_healthcheck.storage.storage import DuplicateRunError, Storage, StorageError
 
 SLOT = datetime(2026, 10, 18, 0, 0, tzinfo=UTC)
 FINISHED = SLOT + timedelta(seconds=30)

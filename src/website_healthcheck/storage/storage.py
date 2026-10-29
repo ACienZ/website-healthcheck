@@ -13,10 +13,10 @@ from pathlib import Path
 import sqlite3
 from typing import Self
 
-from canlah_healthcheck.checker.checker import Attempt, CheckResult
-from canlah_healthcheck.config.load_config import ScheduleSettings
-from canlah_healthcheck.storage.models import DeliveryOutcome, Event, Report, StoredCheck
-from canlah_healthcheck.storage.schema import SCHEMA
+from website_healthcheck.checker.checker import Attempt, CheckResult
+from website_healthcheck.config.load_config import ScheduleSettings
+from website_healthcheck.storage.models import DeliveryOutcome, Event, Report, StoredCheck
+from website_healthcheck.storage.schema import SCHEMA
 
 
 class StorageError(RuntimeError):

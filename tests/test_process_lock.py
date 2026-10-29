@@ -20,9 +20,9 @@ import psutil
 import pytest
 import yaml
 
-from canlah_healthcheck import main as entry
-from canlah_healthcheck.checker import checker
-from canlah_healthcheck.scheduler import process_lock as locks
+from website_healthcheck import main as entry
+from website_healthcheck.checker import checker
+from website_healthcheck.scheduler import process_lock as locks
 
 NOW = datetime(2026, 10, 18, tzinfo=UTC)
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,10 +34,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import signal
 import sys
-from canlah_healthcheck.scheduler.process_lock import process_lock
-from canlah_healthcheck.storage.storage import Storage
-from canlah_healthcheck.config.load_config import ScheduleSettings
-from canlah_healthcheck.checker.checker import Attempt, CheckResult
+from website_healthcheck.scheduler.process_lock import process_lock
+from website_healthcheck.storage.storage import Storage
+from website_healthcheck.config.load_config import ScheduleSettings
+from website_healthcheck.checker.checker import Attempt, CheckResult
 path, slot, mode, database = sys.argv[1:]
 slot = datetime.fromisoformat(slot)
 if mode == "unlocked":
@@ -209,7 +209,7 @@ def test_takeover_records_interruption_and_runs_current_round(start_owner, tmp_p
     两个实例所属时段不同，不真实等五分钟，也不请求外部网络。
     """
     config_path = tmp_path / "config.yaml"
-    data = yaml.safe_load((ROOT / "src/canlah_healthcheck/config/config.yaml.example").read_text())
+    data = yaml.safe_load((ROOT / "src/website_healthcheck/config/config.yaml.example").read_text())
     data["targets"] = ["https://example.com/"]
     data["schedule"]["stop_timeout_seconds"] = 0.2
     config_path.write_text(yaml.safe_dump(data))
@@ -247,7 +247,7 @@ def test_main_does_not_open_database_when_owner_is_unknown(start_owner, tmp_path
     process, path = start_owner(path=path)
     owner_file(path).write_text("{")
     config_path = tmp_path / "config.yaml"
-    config_path.write_text((ROOT / "src/canlah_healthcheck/config/config.yaml.example").read_text())
+    config_path.write_text((ROOT / "src/website_healthcheck/config/config.yaml.example").read_text())
     monkeypatch.setattr(entry, "run_checks", lambda *args: pytest.fail("不应执行 HTTP"))
     assert entry.main(["--config", str(config_path)]) == 2
     assert "无法确认旧实例身份" in capsys.readouterr().err

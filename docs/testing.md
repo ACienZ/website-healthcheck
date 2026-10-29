@@ -85,12 +85,25 @@ workflow 使用只读仓库权限和十分钟超时，不配置 Gmail Secrets，
 
 随后已分别核对普通 CI 与真实标签触发的发布运行：
 
-- [PR #19 的 Ubuntu/Python 3.12 CI](https://github.com/ACienZ/canlah-healthcheck/actions/runs/39096616003)：271 项通过（8.33 秒）。
+- [PR #19 的 Ubuntu/Python 3.12 CI](https://github.com/ACienZ/website-healthcheck/actions/runs/39096616003)：271 项通过（8.33 秒）。
 - 用户合并 PR #19 后，本地在实际合并提交 `76ada0b` 执行 `uv sync --locked` 成功，完整 pytest 271 项通过（13.64 秒）。
-- 用户授权推送 v0.1.0 后，[正式 Release Actions](https://github.com/ACienZ/canlah-healthcheck/actions/runs/39096892581) 的 Linux 完整 pytest 271 项通过（7.75 秒），随后发布任务成功创建 [v0.1.0](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.0)。
-- 同一提交的 [main Tests CI](https://github.com/ACienZ/canlah-healthcheck/actions/runs/39096753303) 和 [标签 Tests CI](https://github.com/ACienZ/canlah-healthcheck/actions/runs/39096892582) 均成功；实际发布说明和源码归档已检查，详见 [正式发布记录](releases.md#v010-正式发布记录)。
+- 用户授权推送 v0.1.0 后，[正式 Release Actions](https://github.com/ACienZ/website-healthcheck/actions/runs/39096892581) 的 Linux 完整 pytest 271 项通过（7.75 秒），随后发布任务成功创建 [v0.1.0](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.0)。
+- 同一提交的 [main Tests CI](https://github.com/ACienZ/website-healthcheck/actions/runs/39096753303) 和 [标签 Tests CI](https://github.com/ACienZ/website-healthcheck/actions/runs/39096892582) 均成功；实际发布说明和源码归档已检查，详见 [正式发布记录](releases.md#v010-正式发布记录)。
 
 本地发布测试、普通 CI 与实际创建 Release 是三类验证；均未通过业务测试连接真实 Gmail 或安装系统 cron。用户的 Mac 真实运行反馈和 Linux 生产主机验收仍按前述边界区分。
+
+## 完整改名的本地验收（2026-10-29）
+
+本轮为 website-healthcheck / website_healthcheck 更名及 0.2.0 准备：
+
+- `uv sync --locked --offline` 通过；锁文件比较确认全部依赖版本、来源、哈希与元数据不变，仅本项目名称和版本变化。
+- `uv run --locked pytest -q`：272 项通过，11.33 秒。原 271 项覆盖同步迁移到新包和命令，新增已安装 `website-healthcheck --help` 从空目录运行的子进程测试，验证无需真实配置且不会生成运行文件。
+- shell 语法检查通过；124 处本地文档文件/章节链接及 9 组双语 shell/cron 示例一致性通过。
+- `uv build --offline --out-dir /tmp/website-healthcheck-0.2.0-dist` 成功，sdist 有 50 个文件，新包、命令映射、0.2.0 与 MIT 正确，未包含真实配置、数据库、日志、.vscode/ 或 .venv/。
+- wheel 在临时独立虚拟环境安装后，从项目外执行 --help 与导入成功，读取分发元数据为 website-healthcheck 0.2.0。
+- 本地配置与运行数据仅随包目录迁移，文件大小及修改时间不变；示例配置内容与改名前一致。没有请求真实网站、连接 Gmail 或编辑系统 cron。
+
+以上为本地结果；改名提交的 Linux CI、实际标签和 Release 仍需在后续推送、审阅合并及发布后分别核对。
 
 ## 真实验证方法与已知边界
 

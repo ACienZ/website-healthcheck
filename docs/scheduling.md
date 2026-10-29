@@ -2,7 +2,7 @@
 
 ## 阅读顺序与执行流程
 
-先读 `src/canlah_healthcheck/main.py` 的 `main`，再读 `_run_once`，最后读 `scheduler/process_lock.py`。前者把各模块串起来，后者只负责互斥，不重写页面检查、SQL 或 SMTP。代码和测试包含中文职责说明与关键边界注释。
+先读 `src/website_healthcheck/main.py` 的 `main`，再读 `_run_once`，最后读 `scheduler/process_lock.py`。前者把各模块串起来，后者只负责互斥，不重写页面检查、SQL 或 SMTP。代码和测试包含中文职责说明与关键边界注释。
 
 1. 读取配置，计算当前属于哪个 UTC 时段，例如每五分钟一次时，12:03 属于 12:00 时段。
 2. 尝试取得执行锁。若旧时段实例还在执行，核对它的 PID、创建时间和锁文件，请求退出；等待超时后强制终止。确认锁已释放后才继续。若等待期间跨过时段边界，按实际开始时刻重新计算当前时段，不去执行已经过去的时段。
@@ -36,11 +36,11 @@
 
 ## 手动运行与启动器
 
-先填写被忽略的 `src/canlah_healthcheck/config/config.yaml`，然后在仓库根目录执行以下命令。主入口已在 pyproject.toml 中注册为 canlah-healthcheck，不是根目录的 main.py：
+先填写被忽略的 `src/website_healthcheck/config/config.yaml`，然后在仓库根目录执行以下命令。主入口已在 pyproject.toml 中注册为 website-healthcheck，不是根目录的 main.py：
 
 ```sh
 uv sync --locked
-uv run --locked canlah-healthcheck
+uv run --locked website-healthcheck
 ```
 
 也可通过 `--config /absolute/path/config.yaml` 指定配置。命令现在会真实执行检查和可能的邮件发送，不再只是配置校验；示例中的密码不能用于实际投递。
@@ -51,25 +51,25 @@ cron 使用 `/bin/sh scripts/run_healthcheck.sh /absolute/uv /absolute/config.ya
 
 ## 生成与手动安装 cron
 
-以下为部署模板，将 `/srv/canlah-healthcheck` 和 `/absolute/uv` 替换为部署机的真实绝对路径；不要直接照抄占位路径。配置与日志路径保留在包内 config/，var/ 运行数据已被 Git 忽略。
+以下为部署模板，将 `/srv/website-healthcheck` 和 `/absolute/uv` 替换为部署机的真实绝对路径；不要直接照抄占位路径。配置与日志路径保留在包内 config/，var/ 运行数据已被 Git 忽略。
 
 ```sh
-mkdir -p /srv/canlah-healthcheck/src/canlah_healthcheck/config/var
-chmod 700 /srv/canlah-healthcheck/src/canlah_healthcheck/config/var
-chmod 600 /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml
-touch /srv/canlah-healthcheck/src/canlah_healthcheck/config/var/healthcheck.log
-chmod 600 /srv/canlah-healthcheck/src/canlah_healthcheck/config/var/healthcheck.log
+mkdir -p /srv/website-healthcheck/src/website_healthcheck/config/var
+chmod 700 /srv/website-healthcheck/src/website_healthcheck/config/var
+chmod 600 /srv/website-healthcheck/src/website_healthcheck/config/config.yaml
+touch /srv/website-healthcheck/src/website_healthcheck/config/var/healthcheck.log
+chmod 600 /srv/website-healthcheck/src/website_healthcheck/config/var/healthcheck.log
 uv run --locked python scripts/print_cron.py \
   --uv /absolute/uv \
-  --config /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml \
-  --log /srv/canlah-healthcheck/src/canlah_healthcheck/config/var/healthcheck.log
+  --config /srv/website-healthcheck/src/website_healthcheck/config/config.yaml \
+  --log /srv/website-healthcheck/src/website_healthcheck/config/var/healthcheck.log
 ```
 
 辅助脚本只读配置并打印，不创建运行文件或安装任务。默认检查周期生成如下结构，实际路径会自动进行 shell 引用：
 
 ```cron
 CRON_TZ=UTC
-*/5 * * * * /bin/sh /srv/canlah-healthcheck/scripts/run_healthcheck.sh /absolute/uv /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml >> /srv/canlah-healthcheck/src/canlah_healthcheck/config/var/healthcheck.log 2>&1
+*/5 * * * * /bin/sh /srv/website-healthcheck/scripts/run_healthcheck.sh /absolute/uv /srv/website-healthcheck/src/website_healthcheck/config/config.yaml >> /srv/website-healthcheck/src/website_healthcheck/config/var/healthcheck.log 2>&1
 ```
 
 先用 `crontab -l` 核对已有任务，再用 `crontab -e` 手动加入生成片段，保留原有条目。`CRON_TZ` 会作用于后续条目，安装时需保留其他任务原有时区设置，或将此片段放在现有条目末尾。不要把生成结果直接管道传入 crontab，以免覆盖已有任务。

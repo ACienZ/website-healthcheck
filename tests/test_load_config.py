@@ -16,10 +16,10 @@ import traceback
 import pytest
 import yaml
 
-from canlah_healthcheck.config.load_config import ConfigError, load_config
+from website_healthcheck.config.load_config import ConfigError, load_config
 
 # __file__ 是本测试文件的位置；parents[1] 是项目根目录，避免依赖运行时 cwd。
-CONFIG_DIR = Path(__file__).resolve().parents[1] / "src/canlah_healthcheck/config"
+CONFIG_DIR = Path(__file__).resolve().parents[1] / "src/website_healthcheck/config"
 EXAMPLE = CONFIG_DIR / "config.yaml.example"
 # 人工构造的测试字符串，不是真实凭证；用于检查明文是否意外出现在输出中。
 SECRET = "test-only-SMTP-secret"

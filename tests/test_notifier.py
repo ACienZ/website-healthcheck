@@ -15,11 +15,11 @@ import traceback
 
 import pytest
 
-from canlah_healthcheck.checker.checker import Attempt, CheckResult
-from canlah_healthcheck.config.load_config import MailSettings, ScheduleSettings
-from canlah_healthcheck.notifier import notifier
-from canlah_healthcheck.storage.models import Event, Report, StoredCheck
-from canlah_healthcheck.storage.storage import Storage
+from website_healthcheck.checker.checker import Attempt, CheckResult
+from website_healthcheck.config.load_config import MailSettings, ScheduleSettings
+from website_healthcheck.notifier import notifier
+from website_healthcheck.storage.models import Event, Report, StoredCheck
+from website_healthcheck.storage.storage import Storage
 
 NOW = datetime(2026, 10, 18, tzinfo=UTC)
 SECRET = "test-only-mail-password"  # 人工测试值，不是真实账号密码。
@@ -125,7 +125,7 @@ def test_ssl_login_and_message_content(report, settings, smtp, capsys):
     assert recipients == settings.recipients
     # bytes 往返解析，验证实际 MIME 编码后仍能读取中文、收件地址和正文。
     parsed = BytesParser(policy=policy.default).parsebytes(message.as_bytes())
-    assert str(parsed["Subject"]) == "[Canlah Healthcheck] 3 条待通知事件"
+    assert str(parsed["Subject"]) == "[Website Healthcheck] 3 条待通知事件"
     assert str(parsed["From"]) == settings.sender
     assert {address.addr_spec for address in parsed["To"].addresses} == set(settings.recipients)
     assert parsed["Date"].datetime == report.period_end

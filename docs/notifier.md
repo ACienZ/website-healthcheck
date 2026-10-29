@@ -1,6 +1,6 @@
 # Gmail 汇总告警模块
 
-实现位于 `src/canlah_healthcheck/notifier/notifier.py`，使用标准库 `smtplib`、`ssl` 和 `email`，没有新增依赖。测试位于 `tests/test_notifier.py`。
+实现位于 `src/website_healthcheck/notifier/notifier.py`，使用标准库 `smtplib`、`ssl` 和 `email`，没有新增依赖。测试位于 `tests/test_notifier.py`。
 
 ## 职责与调用顺序
 

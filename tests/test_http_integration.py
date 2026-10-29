@@ -23,12 +23,12 @@ import httpx
 import pytest
 import yaml
 
-from canlah_healthcheck import main as entry
-from canlah_healthcheck.checker.checker import check_page
-from canlah_healthcheck.config.load_config import CheckSettings, load_config
-from canlah_healthcheck.notifier import notifier
+from website_healthcheck import main as entry
+from website_healthcheck.checker.checker import check_page
+from website_healthcheck.config.load_config import CheckSettings, load_config
+from website_healthcheck.notifier import notifier
 
-EXAMPLE = Path(__file__).resolve().parents[1] / "src/canlah_healthcheck/config/config.yaml.example"
+EXAMPLE = Path(__file__).resolve().parents[1] / "src/website_healthcheck/config/config.yaml.example"
 SECRET = "http-integration-test-password"
 
 
@@ -288,7 +288,7 @@ def test_installed_command_with_actual_http(config_file, tmp_path, http_site):
     data["targets"] = [http_site.url + "/healthy", http_site.url + "/redirect"]
     data["schedule"]["interval_minutes"] = 60
     config_file.write_text(yaml.safe_dump(data))
-    command = [str(Path(sys.executable).parent / "canlah-healthcheck"), "--config", str(config_file)]
+    command = [str(Path(sys.executable).parent / "website-healthcheck"), "--config", str(config_file)]
     result = subprocess.run(command, cwd=tmp_path, capture_output=True, text=True, timeout=15)
     assert result.returncode == 0, result.stdout + result.stderr
     database = load_config(config_file).storage.database_path

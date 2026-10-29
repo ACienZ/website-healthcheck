@@ -10,8 +10,8 @@ from pathlib import Path
 import shlex
 import sys
 
-from canlah_healthcheck.config.load_config import ConfigError, load_config
-from canlah_healthcheck.main import DEFAULT_CONFIG
+from website_healthcheck.config.load_config import ConfigError, load_config
+from website_healthcheck.main import DEFAULT_CONFIG
 
 LAUNCHER = Path(__file__).resolve().with_name("run_healthcheck.sh")
 
