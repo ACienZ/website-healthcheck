@@ -1,14 +1,15 @@
-# Canlah Healthcheck TODO
+# Website Healthcheck TODO
 
-更新日期：2026-10-29。初版步骤 0–7 已全部完成，v0.1.1 已发布并包含 MIT 许可证；当前进行 GitHub 展示定位与双语 README 整理。下方原始步骤与验收记录为历史资料，旧 README 行数不描述当前首页。
+更新日期：2026-10-29。初版步骤 0–7 已全部完成，v0.1.1 已发布并包含 MIT 许可证；展示文档已合并，当前进行 website-healthcheck 完整改名及 v0.2.0 准备。下方原始步骤与验收记录为历史资料，旧 README 行数不描述当前首页。
 
-- Project：[Canlah_healthcheck Tracker](https://github.com/users/ACienZ/projects/12/views/1)。
-- 初版发布：[步骤 7 #11](https://github.com/ACienZ/canlah-healthcheck/issues/11) 已关闭，[v0.1.0](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.0) 已发布。
-- 公开前收尾：[Issue #20](https://github.com/ACienZ/canlah-healthcheck/issues/20) 已关闭、PR #21 已合并，MIT 文件及包元数据已进入 main。
-- 已完成版本任务：[Issue #22](https://github.com/ACienZ/canlah-healthcheck/issues/22) 已关闭，PR #23 已合并；[v0.1.1](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.1) 于 2026-10-18 发布，2026-10-29 已回读核实。
-- 当前任务：[Issue #24](https://github.com/ACienZ/canlah-healthcheck/issues/24)，关联分支 `codex/24-showcase-readme`；documentation / P1 / S，Project 为 In progress，待用户审阅。
+- Project：[Website Healthcheck Tracker](https://github.com/users/ACienZ/projects/12/views/1)。
+- 初版发布：[步骤 7 #11](https://github.com/ACienZ/website-healthcheck/issues/11) 已关闭，[v0.1.0](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.0) 已发布。
+- 公开前收尾：[Issue #20](https://github.com/ACienZ/website-healthcheck/issues/20) 已关闭、PR #21 已合并，MIT 文件及包元数据已进入 main。
+- 已完成版本任务：[Issue #22](https://github.com/ACienZ/website-healthcheck/issues/22) 已关闭，PR #23 已合并；[v0.1.1](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.1) 于 2026-10-18 发布，2026-10-29 已回读核实。
+- 展示文档：[Issue #24](https://github.com/ACienZ/website-healthcheck/issues/24) 已关闭，PR #25 已合并（7e20cbf），Project 为 Done，远端分支已删除。
+- 当前任务：[Issue #26](https://github.com/ACienZ/website-healthcheck/issues/26)，关联分支 `codex/26-rename-website-healthcheck`；refactoring / documentation / testing，P1 / M / In progress。
 - 设计：[实施设计与接口](docs/planning/implementation-plan.md)。
-- 保留 [Issue #3：注意git流程](https://github.com/ACienZ/canlah-healthcheck/issues/3) 及其现有状态、标签。
+- 保留 [Issue #3：注意git流程](https://github.com/ACienZ/website-healthcheck/issues/3) 及其现有状态、标签。
 
 ## 初始化记录
 
@@ -23,14 +24,14 @@
 
 | 步骤 | Issue | 状态 | Size |
 | --- | --- | --- | --- |
-| 0 | [固化需求、接口与实施计划](https://github.com/ACienZ/canlah-healthcheck/issues/4) | Done | S |
-| 1 | [建立 src 包结构与配置管理](https://github.com/ACienZ/canlah-healthcheck/issues/5) | Done | M |
-| 2 | [页面检查与重试](https://github.com/ACienZ/canlah-healthcheck/issues/6) | Done | M |
-| 3 | [SQLite 执行与结果记录](https://github.com/ACienZ/canlah-healthcheck/issues/7) | Done | M |
-| 4 | [Gmail SMTP 汇总告警](https://github.com/ACienZ/canlah-healthcheck/issues/8) | Done | M |
-| 5 | [命令入口与 cron 调度](https://github.com/ACienZ/canlah-healthcheck/issues/9) | Done | M |
-| 6 | [集成验证、CI 与说明文档](https://github.com/ACienZ/canlah-healthcheck/issues/10) | Done | M |
-| 7 | [首次发布自动化](https://github.com/ACienZ/canlah-healthcheck/issues/11) | Done | M |
+| 0 | [固化需求、接口与实施计划](https://github.com/ACienZ/website-healthcheck/issues/4) | Done | S |
+| 1 | [建立 src 包结构与配置管理](https://github.com/ACienZ/website-healthcheck/issues/5) | Done | M |
+| 2 | [页面检查与重试](https://github.com/ACienZ/website-healthcheck/issues/6) | Done | M |
+| 3 | [SQLite 执行与结果记录](https://github.com/ACienZ/website-healthcheck/issues/7) | Done | M |
+| 4 | [Gmail SMTP 汇总告警](https://github.com/ACienZ/website-healthcheck/issues/8) | Done | M |
+| 5 | [命令入口与 cron 调度](https://github.com/ACienZ/website-healthcheck/issues/9) | Done | M |
+| 6 | [集成验证、CI 与说明文档](https://github.com/ACienZ/website-healthcheck/issues/10) | Done | M |
+| 7 | [首次发布自动化](https://github.com/ACienZ/website-healthcheck/issues/11) | Done | M |
 
 ## 步骤 0 验收记录
 
@@ -143,12 +144,12 @@
 - [x] 用户已审阅实现及发布步骤，授权 commit、推送与创建 PR；提交包含 Codex 共同作者署名。
 - [x] 用户已合并 PR #19（76ada0b）、关闭 Issue #11 并删除远端分支；Project 为 Done。
 - [x] 获得用户发版授权后，同步 main，在实际合并提交上运行完整 pytest：271 项通过（13.64 秒），再推送带说明标签 v0.1.0。
-- [x] [正式 Release Actions](https://github.com/ACienZ/canlah-healthcheck/actions/runs/39096892581) 校验成功，Linux 完整 pytest 271 项通过（7.75 秒），随后成功创建 [v0.1.0](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.0)。
+- [x] [正式 Release Actions](https://github.com/ACienZ/website-healthcheck/actions/runs/39096892581) 校验成功，Linux 完整 pytest 271 项通过（7.75 秒），随后成功创建 [v0.1.0](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.0)。
 - [x] 核对自动发布说明及 GitHub 源码归档：必要文件齐全，不含真实配置、数据库、日志或本地环境文件；发布详情见 [发布记录](docs/releases.md#v010-正式发布记录)。
 
 ## 公开前收尾记录
 
-- [x] 关联 [Issue #20](https://github.com/ACienZ/canlah-healthcheck/issues/20)，同步 TODO、设计、测试与正式发布记录。
+- [x] 关联 [Issue #20](https://github.com/ACienZ/website-healthcheck/issues/20)，同步 TODO、设计、测试与正式发布记录。
 - [x] 按用户选择添加 MIT LICENSE（2026 ACienZ）、包许可证元数据和双语 README 入口。
 - [x] 完整 pytest 271 项通过（10.83 秒）；121 处文档链接/章节及 README 各 10 行检查通过；uv sync --locked 与 sdist/wheel 构建通过，归档含 MIT 文件，wheel 声明 MIT 元数据，真实配置与运行数据仍排除。
 - 本收尾使用独立 PR 交付，由用户合并后自行公开仓库与 Project；不移动 v0.1.0 标签或改写已发布归档。
@@ -173,12 +174,28 @@
 ## GitHub 展示文档整理（Issue #24）
 
 - [x] 2026-10-29 核对远端 main 与本地一致，基线为 `9f18aeb5177a5c6a19c19686d8f6a02e3464028d`；Issue #22 已关闭、Project 为 Done，v0.1.1 已发布。
-- [x] 创建 [Issue #24](https://github.com/ACienZ/canlah-healthcheck/issues/24)，加入 Project #12，设为 documentation / P1 / S / In progress；从 main 创建并检出关联分支 `codex/24-showcase-readme`。
+- [x] 创建 [Issue #24](https://github.com/ACienZ/website-healthcheck/issues/24)，加入 Project #12，设为 documentation / P1 / S / In progress；从 main 创建并检出关联分支 `codex/24-showcase-readme`。
 - [x] 将完整中英文指南整合为 README，移除旧指南；更新展示定位、测试体验入口、默认目标来源、历史验证日期及已发布版本说明。
 - [x] 更新协作约定、实施设计、部署/测试链接及历史题目说明，保留原始题目正文和历史验收记录。
 - [x] 检查 14 份 Markdown 中 120 处本地文件/章节链接，全部通过；9 组双语 shell/cron 示例一致（退出码提示文字翻译除外）；对照原指南审阅完整迁移差异，git diff --check 通过。
 - [x] 核实原始题目正文完整保留，旧指南文件已移除，现行 README 不含申请叙述；所有已跟踪改动均为 Markdown，Project 字段与关联分支已回读确认。
 - [x] 用户已审阅本地文档，并于 2026-10-29 授权提交、推送及创建 PR。
-- [ ] PR 由用户 review 后合并；合并后再关闭任务、同步 Project 并清理分支。
+- [x] 用户已于 2026-10-29 合并 [PR #25](https://github.com/ACienZ/website-healthcheck/pull/25)（7e20cbf），Issue 已关闭、Project 为 Done，远端分支已删除；本地已同步 main。分支归档留待本次改名合并后统一整理。
 
 本轮仅修改文档，不运行 pytest 或真实网站、SMTP、cron；未改代码、配置、版本与锁文件。未跟踪的 .vscode/ 保留，不纳入任务；未修改上级资料。
+
+
+## 完整改名与发布准备（Issue #26）
+
+- [x] 用户确认完整改名为 website-healthcheck，仓库/命令与 website_healthcheck 包统一；以已合并的 PR #25 为基线创建独立 Issue 和关联分支。
+- [x] GitHub 仓库更名为 ACienZ/website-healthcheck，Project #12 更名为 Website Healthcheck Tracker；origin 已同步新地址，可见性仍为 Private。
+- [x] 迁移源码包目录，同步导入、命令、启动器、通知标题、打包配置、忽略规则和现行文档；本地配置及运行数据仅移动目录，文件大小与修改时间保持不变。原始示例网站与关键词不变。
+- [x] 准备 0.2.0 项目版本；旧名称、旧版本、原始题目和历史验证证据保留为历史资料。
+- [x] `uv lock --offline` 与 `uv sync --locked --offline` 通过；解析比较锁文件确认仅本项目名称、版本及排序变化，全部依赖元数据保持不变。
+- [x] `uv run --locked pytest -q`：272 项通过（11.33 秒）；新增真实新命令 --help 的空目录子进程检查；shell 语法检查通过。
+- [x] sdist/wheel 构建通过，源码包 50 个文件；新包目录、0.2.0、命令映射与 MIT 校验通过，未包含真实配置、运行数据、.vscode/ 或 .venv/。临时独立环境安装 wheel 后，新包导入与 --help 通过。
+- [x] 124 处本地文档文件/章节链接及 9 组双语 shell/cron 示例一致性通过；原始示例配置与本地真实配置/运行数据属性保持不变；完整 diff 与空白检查通过。
+- [x] 用户已审阅本地改名结果并授权提交、推送和创建 PR；提交包含 Codex 共同作者署名。
+- [ ] 用户审阅改名 PR 并合并；随后整理本地分支和目录，再发布并核对 v0.2.0 的 Actions / Release / 源码归档。
+
+本任务不修改现有业务规则，不安装 cron、不请求真实网站或发送邮件；.vscode/ 与本地配置/运行数据保留且不提交。项目归档由用户最终执行。

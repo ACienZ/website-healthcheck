@@ -1,10 +1,17 @@
 # GitHub Release 发布
 
-项目版本为 `0.1.1`，[v0.1.1 Release](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.1) 已于 2026-10-18 发布，2026-10-29 已回读核实。下方“v0.1.1 发布准备”与具体发版命令保留为历史流程参考，不应重新创建或移动已发布标签。后续版本仍须在版本 PR 合并、验收并获得授权后发版。使用 GitHub Actions 和 GitHub Release，不发布到 PyPI；下载内容使用 GitHub 为标签提供的源码 ZIP/tar.gz，不额外上传 wheel 或运行数据。
+项目当前准备版本为 `0.2.0`，完整改名为 website-healthcheck；标签与 Release 尚未创建。[v0.1.1 Release](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.1) 已于 2026-10-18 发布，保留其原始名称、标签与归档。版本 PR 合并、验收后才发版。使用 GitHub Actions 和 GitHub Release，不发布到 PyPI；下载内容使用 GitHub 为标签提供的源码 ZIP/tar.gz，不额外上传 wheel 或运行数据。
+
+## v0.2.0 发布准备
+
+- [Issue #26](https://github.com/ACienZ/website-healthcheck/issues/26) 同步仓库、Python 分发名、包名、命令、通知标题及文档，版本从 0.1.1 更新为 0.2.0，不升级依赖。包含已合并 PR #25 的展示首页。
+- 新入口为 `website-healthcheck`，导入为 `website_healthcheck`；旧部署需要迁移配置/运行数据并更新 cron，见[迁移说明](../README_CN.md#从旧名称迁移)。
+- 用户已要求最后发布新版本；仍按开发流程先审阅合并改名 PR，再同步 main、整理本地、验证实际合并提交并推送 `v0.2.0`，最后核实 Actions、Release 与 GitHub 源码归档。
+- 下方 v0.1.1 准备与 v0.1.0 发布记录为历史资料；不重新创建或移动已有标签。
 
 ## v0.1.1 发布准备
 
-[PR #21](https://github.com/ACienZ/canlah-healthcheck/pull/21) 已将 MIT LICENSE、包许可证元数据和文档收尾合并到 main（cbd135b）。旧 v0.1.0 快照不含这些文件，因此通过 [Issue #22](https://github.com/ACienZ/canlah-healthcheck/issues/22) 准备新版本：
+[PR #21](https://github.com/ACienZ/website-healthcheck/pull/21) 已将 MIT LICENSE、包许可证元数据和文档收尾合并到 main（cbd135b）。旧 v0.1.0 快照不含这些文件，因此通过 [Issue #22](https://github.com/ACienZ/website-healthcheck/issues/22) 准备新版本：
 
 - 将 pyproject.toml 与 uv.lock 的项目版本更新为 0.1.1，保留现有依赖和业务行为。
 - 新源码归档应包含 LICENSE，包元数据应声明 MIT；构建检查同时确认真实配置与运行数据仍被排除。
@@ -15,10 +22,10 @@
 
 2026-10-18 已完成正式发布：
 
-- 用户合并 [PR #19](https://github.com/ACienZ/canlah-healthcheck/pull/19) 后授权发版；标签 v0.1.0 指向合并提交 `76ada0b14cc5247333e0cd13f21088cae4de7fba`。
+- 用户合并 [PR #19](https://github.com/ACienZ/website-healthcheck/pull/19) 后授权发版；标签 v0.1.0 指向合并提交 `76ada0b14cc5247333e0cd13f21088cae4de7fba`。
 - 实际合并提交本地 `uv sync --locked` 成功，完整 pytest 271 项通过（13.64 秒）；发布前标签校验通过。
-- [Release Actions](https://github.com/ACienZ/canlah-healthcheck/actions/runs/39096892581) 的 Linux 完整 pytest 271 项通过（7.75 秒），随后 publish job 成功。
-- [v0.1.0 Release](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.0) 于 04:23:26 UTC（13:23:26 JST）发布，非草稿、非预发布；自动说明已核对。
+- [Release Actions](https://github.com/ACienZ/website-healthcheck/actions/runs/39096892581) 的 Linux 完整 pytest 271 项通过（7.75 秒），随后 publish job 成功。
+- [v0.1.0 Release](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.0) 于 04:23:26 UTC（13:23:26 JST）发布，非草稿、非预发布；自动说明已核对。
 - 下载实际 GitHub 源码 tar.gz 检查，共 50 个文件，必要源码、锁文件、双语文档及示例配置齐全；无真实 config.yaml、数据库、日志、.vscode/ 或 .venv/。
 - Issue #11 已关闭，Project 为 Done；同一提交的 main 与标签普通 Tests CI 也均通过。
 
@@ -41,7 +48,7 @@ main 可能已有更新，所以标签不必指向 main 最新提交，但必须
 
 ## 合并后的发布操作
 
-**以下命令用于 v0.1.1，仅在对应版本 PR 已合并、验收完成且用户授权发版后执行。v0.1.0 已发布，不重复创建或移动旧标签。**
+**以下命令用于 v0.2.0，仅在对应版本 PR 已合并、验收完成后执行。用户已要求最终发版；v0.1.0 和 v0.1.1 已发布，不重复创建或移动旧标签。**
 
 1. 确认工作区没有未提交的项目改动，再切换到 main 并同步：
 
@@ -58,23 +65,23 @@ main 可能已有更新，所以标签不必指向 main 最新提交，但必须
    ```sh
    uv run --locked python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])'
    git log -1 --oneline
-   git tag --list v0.1.1
-   gh release list --repo ACienZ/canlah-healthcheck
+   git tag --list v0.2.0
+   gh release list --repo ACienZ/website-healthcheck
    ```
 
 3. 获得授权后创建标签，先在本地验证，再只推送这个标签：
 
    ```sh
-   git tag -a v0.1.1 -m "Release v0.1.1"
-   uv run --locked python scripts/verify_release.py v0.1.1
-   git push origin v0.1.1
+   git tag -a v0.2.0 -m "Release v0.2.0"
+   uv run --locked python scripts/verify_release.py v0.2.0
+   git push origin v0.2.0
    ```
 
 4. 打开仓库 Actions，查看名称为 `Release` 的运行：先确认 `verify-and-test` 完整 pytest 通过，再确认 `publish` 成功。也可以用以下只读命令查看：
 
    ```sh
-   gh run list --repo ACienZ/canlah-healthcheck --workflow release.yml --limit 5
-   gh release view v0.1.1 --repo ACienZ/canlah-healthcheck
+   gh run list --repo ACienZ/website-healthcheck --workflow release.yml --limit 5
+   gh release view v0.2.0 --repo ACienZ/website-healthcheck
    ```
 
 5. 打开 Release 页面，检查标签、目标提交、自动生成说明和源码下载链接。自动说明是否完整仍需人工查看，尤其是首次发布；必要时在 GitHub 页面编辑说明，不重打标签。

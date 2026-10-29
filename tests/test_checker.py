@@ -12,11 +12,11 @@ from pathlib import Path
 import httpx
 import pytest
 
-from canlah_healthcheck.checker import checker
-from canlah_healthcheck.config.load_config import CheckSettings, load_config
+from website_healthcheck.checker import checker
+from website_healthcheck.config.load_config import CheckSettings, load_config
 
 TARGET = "https://example.com/"
-EXAMPLE = Path(__file__).resolve().parents[1] / "src/canlah_healthcheck/config/config.yaml.example"
+EXAMPLE = Path(__file__).resolve().parents[1] / "src/website_healthcheck/config/config.yaml.example"
 
 
 class Clock:

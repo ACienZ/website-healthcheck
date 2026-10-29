@@ -1,8 +1,8 @@
-# Python Website Healthcheck Exercise
+# Website Healthcheck — Python Website Healthcheck Exercise
 
 English | [简体中文](README_CN.md) · [MIT License](LICENSE)
 
-Canlah Healthcheck is a single-machine Python engineering exercise combining HTTP checks and retries, SQLite execution records, missed-execution and interruption detection, Gmail summary alerts, and pytest / GitHub Actions validation. Each invocation executes only the current round; system cron starts the next round five minutes later by default.
+Website Healthcheck is a single-machine Python engineering exercise combining HTTP checks and retries, SQLite execution records, missed-execution and interruption detection, Gmail summary alerts, and pytest / GitHub Actions validation. Each invocation executes only the current round; system cron starts the next round five minutes later by default.
 
 Start with [installation and tests](#installation-and-first-run) to explore the project without real website or Gmail access. This exercise demonstrates module boundaries, persistent execution and notification state, process coordination, and isolated tests. It is not production-ready; see [current limitations](#current-limitations-and-production-preparation). Detailed documents under `docs/` are currently in Chinese. The [original exercise requirements](refs/requirement.md) are retained as historical context; their short-README limit no longer applies to this showcase.
 
@@ -13,6 +13,7 @@ Start with [installation and tests](#installation-and-first-run) to explore the 
 - [Directory layout and module responsibilities](#directory-layout-and-module-responsibilities)
 - [How one round runs](#how-one-round-runs)
 - [Installation and first run](#installation-and-first-run)
+- [Migration from the previous name](#migration-from-the-previous-name)
 - [Configuration](#configuration)
 - [Deployment with a five-minute schedule](#deployment-with-a-five-minute-schedule)
 - [Tests and continuous integration](#tests-and-continuous-integration)
@@ -47,7 +48,7 @@ The project also provides:
 | Area | Choice and purpose |
 | --- | --- |
 | Language and environment | Python 3.12 and uv; dependencies are declared in pyproject.toml and locked in uv.lock |
-| Layout and build | src package layout and Hatchling; installation registers the canlah-healthcheck command |
+| Layout and build | src package layout and Hatchling; installation registers the website-healthcheck command |
 | Configuration | YAML, PyYAML, and Pydantic v2; load and validate types, paths, and numeric ranges |
 | HTTP | A synchronous HTTPX client; check targets sequentially and reuse connections |
 | Database | Python's standard-library sqlite3; a local file, without a separate database server or ORM |
@@ -67,7 +68,7 @@ The initial implementation uses no message queue. Development takes place on Mac
 ├── TODO.md                       # Task progress and acceptance records
 ├── pyproject.toml / uv.lock      # Package configuration, dependencies, and lockfile
 ├── refs/requirement.md           # Historical exercise requirements
-├── src/canlah_healthcheck/
+├── src/website_healthcheck/
 │   ├── main.py                  # Command entry point coordinating the modules below
 │   ├── config/
 │   │   ├── load_config.py       # Configuration models, loading, validation, and path resolution
@@ -101,7 +102,7 @@ The initial implementation uses no message queue. Development takes place on Mac
 | notifier | send_alert | Build and send an email; no interval decisions or database writes |
 | main | main, _run_once | Coordinate calls, hold the lock, and return an exit code |
 
-Start reading the code at [main.py](src/canlah_healthcheck/main.py), then follow the modules in the table. See the [implementation design](docs/planning/implementation-plan.md) for detailed interfaces and decisions.
+Start reading the code at [main.py](src/website_healthcheck/main.py), then follow the modules in the table. See the [implementation design](docs/planning/implementation-plan.md) for detailed interfaces and decisions.
 
 ## How one round runs
 
@@ -130,8 +131,8 @@ The lock covers checks, database operations, and the email stage. Check frequenc
 Install Git and uv, and ensure Python and the locked dependencies can be downloaded. Obtain the repository and run:
 
 ```sh
-git clone https://github.com/ACienZ/canlah-healthcheck.git
-cd canlah-healthcheck
+git clone https://github.com/ACienZ/website-healthcheck.git
+cd website-healthcheck
 uv python install
 uv sync --locked
 ```
@@ -144,7 +145,7 @@ After installation, run:
 
 ```sh
 uv run --locked pytest
-uv run --locked canlah-healthcheck --help
+uv run --locked website-healthcheck --help
 ```
 
 This entry point needs no real configuration or Gmail credentials. Tests use temporary databases, HTTP / SMTP substitutes, local loopback HTTP servers, and subprocesses; they do not request the real target websites or send email. Installing dependencies requires download access. See [tests and CI](#tests-and-continuous-integration) for coverage.
@@ -154,21 +155,21 @@ This entry point needs no real configuration or Gmail credentials. Tests use tem
 Copy the example only if a real configuration file does not already exist:
 
 ```sh
-test -e src/canlah_healthcheck/config/config.yaml || cp src/canlah_healthcheck/config/config.yaml.example src/canlah_healthcheck/config/config.yaml
-chmod 600 src/canlah_healthcheck/config/config.yaml
-mkdir -p src/canlah_healthcheck/config/var
-chmod 700 src/canlah_healthcheck/config/var
+test -e src/website_healthcheck/config/config.yaml || cp src/website_healthcheck/config/config.yaml.example src/website_healthcheck/config/config.yaml
+chmod 600 src/website_healthcheck/config/config.yaml
+mkdir -p src/website_healthcheck/config/var
+chmod 700 src/website_healthcheck/config/var
 ```
 
 Edit `config.yaml` with the Gmail account, app password, sender, and recipients. The default server is `smtp.gmail.com:465`; the example password is only a placeholder. Review the target URLs and check rules before running.
 
 ```sh
-uv run --locked canlah-healthcheck --help
-uv run --locked canlah-healthcheck --config "$PWD/src/canlah_healthcheck/config/config.yaml"
+uv run --locked website-healthcheck --help
+uv run --locked website-healthcheck --config "$PWD/src/website_healthcheck/config/config.yaml"
 echo "Exit code: $?"
 ```
 
-The second command makes real website requests, writes the database, and sends mail when needed. Without `--config`, the command uses `config/config.yaml` inside the installed package; with the current uv editable installation, this is the source configuration. The entry point is the registered `canlah-healthcheck` command, not a root-level `main.py`.
+The second command makes real website requests, writes the database, and sends mail when needed. Without `--config`, the command uses `config/config.yaml` inside the installed package; with the current uv editable installation, this is the source configuration. The entry point is the registered `website-healthcheck` command, not a root-level `main.py`.
 
 | Exit code | Meaning |
 | --- | --- |
@@ -179,9 +180,17 @@ The second command makes real website requests, writes the database, and sends m
 
 A second invocation within the same five-minute slot may return 3. Historical missed slots are recorded and reported; they do not by themselves make currently healthy checks return 1.
 
+## Migration from the previous name
+
+Version `0.2.0` changes the distribution and command from `canlah-healthcheck` to `website-healthcheck`, and Python imports from `canlah_healthcheck` to `website_healthcheck`. The GitHub repository is now [ACienZ/website-healthcheck](https://github.com/ACienZ/website-healthcheck). Older release snapshots retain their original names.
+
+Before updating an existing deployment, pause this project's old cron entry and confirm its running instance has stopped. Preserve the real `config.yaml` and the entire `var/` directory from `src/canlah_healthcheck/config/`, then move them into `src/website_healthcheck/config/` without overwriting existing destination data. Keep the relative storage paths unchanged, or update absolute paths in your own configuration. No database schema conversion is needed.
+
+Run `uv sync --locked` to replace the installed package and command. Update any imports, launcher/config/log paths, and cron entries to the new names; regenerate the cron snippet with `scripts/print_cron.py` and review it before resuming the schedule. The project does not edit crontab or migrate deployed credentials automatically. Existing release tags remain unchanged.
+
 ## Configuration
 
-Runtime parameters are managed in the real YAML corresponding to [config.yaml.example](src/canlah_healthcheck/config/config.yaml.example). Models reject unknown fields and invalid types. Error messages do not expose passwords or complete original inputs.
+Runtime parameters are managed in the real YAML corresponding to [config.yaml.example](src/website_healthcheck/config/config.yaml.example). Models reject unknown fields and invalid types. Error messages do not expose passwords or complete original inputs.
 
 | Section | Main settings |
 | --- | --- |
@@ -200,9 +209,9 @@ Relative database and lock paths are resolved against the configuration file's d
 On Linux, prepare the configuration at the deployment path, run `uv sync --locked`, and manually run the launcher once. Replace these template paths with real absolute paths:
 
 ```sh
-/bin/sh /srv/canlah-healthcheck/scripts/run_healthcheck.sh \
+/bin/sh /srv/website-healthcheck/scripts/run_healthcheck.sh \
   /absolute/uv \
-  /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml
+  /srv/website-healthcheck/src/website_healthcheck/config/config.yaml
 ```
 
 The launcher changes to the repository directory, sets UTC and UTF-8, and executes the installed command through `uv run --locked --no-sync`. It does not reinstall dependencies on every invocation.
@@ -212,7 +221,7 @@ Create a writable log directory and file first, then generate the cron snippet f
 ```sh
 uv run --locked python scripts/print_cron.py \
   --uv /absolute/uv \
-  --config /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml \
+  --config /srv/website-healthcheck/src/website_healthcheck/config/config.yaml \
   --log /absolute/healthcheck.log
 ```
 
@@ -220,7 +229,7 @@ The default output has this structure:
 
 ```cron
 CRON_TZ=UTC
-*/5 * * * * /bin/sh /srv/canlah-healthcheck/scripts/run_healthcheck.sh /absolute/uv /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml >> /absolute/healthcheck.log 2>&1
+*/5 * * * * /bin/sh /srv/website-healthcheck/scripts/run_healthcheck.sh /absolute/uv /srv/website-healthcheck/src/website_healthcheck/config/config.yaml >> /absolute/healthcheck.log 2>&1
 ```
 
 Inspect existing entries with `crontab -l`, then append the generated content using `crontab -e`, preserving other tasks. `*/5` triggers at minutes 00, 05, 10, and so on each hour. The log's parent directory must already exist. Do not overwrite the entire crontab with the generator output.
@@ -249,11 +258,13 @@ uv run --locked pytest tests/test_http_integration.py -v
 
 Tests isolate data using pytest fixtures, temporary directories, and SQLite databases. Unit tests substitute HTTP and SMTP. Local HTTP integration tests establish real loopback connections to verify redirects, full-body timing, timeouts, and retries. Subprocess tests exercise real locks, termination of previous instances, and the installed command.
 
-Historical validation on 2026-10-18 recorded 271 passing local tests; this is not a new test result for the documentation update. GitHub Actions runs `uv sync --locked` and `uv run --locked pytest` on Ubuntu/Python 3.12 for pushes and pull requests; verify the actual result for the relevant commit in Actions or PR checks. Tests neither depend on the real Canlah websites or Gmail nor read the user's real configuration. See [test documentation](docs/testing.md) for scope and evidence.
+Local validation for the `0.2.0` rename on 2026-10-29 passed all 272 tests, including a new subprocess check of the installed command's help entry point. The previous version recorded 271 passing tests on 2026-10-18. GitHub Actions runs `uv sync --locked` and `uv run --locked pytest` on Ubuntu/Python 3.12 for pushes and pull requests; verify the actual result for the relevant commit in Actions or PR checks. Tests neither depend on the real Canlah websites or Gmail nor read the user's real configuration. See [test documentation](docs/testing.md) for scope and evidence.
 
 ## Releases
 
-[v0.1.1](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.1) was published on 2026-10-18 and includes the MIT license in its source archive. The existing `v0.1.0` snapshot does not contain the license file. Future releases follow the same workflow: after a version PR is merged and publishing is authorized, push its matching tag. Actions verifies that the tagged commit is already in `main`, installs locked dependencies, and runs the complete pytest suite. Only after these steps pass does a separate job create a GitHub Release with generated release notes.
+Version `0.2.0` is being prepared for the complete rename, following the merged showcase documentation changes. Its tag and Release will be created after the rename PR is reviewed and merged; see [Issue #26](https://github.com/ACienZ/website-healthcheck/issues/26). It is not yet published.
+
+[v0.1.1](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.1) was published on 2026-10-18 and includes the MIT license in its source archive. The existing `v0.1.0` snapshot does not contain the license file. Future releases follow the same workflow: after a version PR is merged and publishing is authorized, push its matching tag. Actions verifies that the tagged commit is already in `main`, installs locked dependencies, and runs the complete pytest suite. Only after these steps pass does a separate job create a GitHub Release with generated release notes.
 
 Reruns preserve an existing Release. Version mismatches, unmerged commits, failed tests, or failed release queries prevent creation. Releases use GitHub's source ZIP/tar.gz archives; nothing is published to PyPI and no extra wheel is uploaded. See the [release guide](docs/releases.md) for commands, troubleshooting, and authorization before the first release.
 

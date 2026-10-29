@@ -11,5 +11,5 @@ __pycache__/
 config.yaml
 
 # Preserve the runtime directory, but never commit its data.
-/src/canlah_healthcheck/config/var/*
-!/src/canlah_healthcheck/config/var/.gitkeep
+/src/website_healthcheck/config/var/*
+!/src/website_healthcheck/config/var/.gitkeep

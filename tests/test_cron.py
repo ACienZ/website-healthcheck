@@ -13,13 +13,13 @@ import sys
 import pytest
 import yaml
 
-from canlah_healthcheck.config.load_config import load_config
-from canlah_healthcheck.scheduler.process_lock import process_lock
+from website_healthcheck.config.load_config import load_config
+from website_healthcheck.scheduler.process_lock import process_lock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/print_cron.py"
 LAUNCHER = ROOT / "scripts/run_healthcheck.sh"
-EXAMPLE = ROOT / "src/canlah_healthcheck/config/config.yaml.example"
+EXAMPLE = ROOT / "src/website_healthcheck/config/config.yaml.example"
 spec = importlib.util.spec_from_file_location("print_cron", SCRIPT)
 cron = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cron)
@@ -68,7 +68,7 @@ def test_generated_command_quotes_paths_and_captures_log(paths, tmp_path):
     assert text.startswith("existing log\n")
     assert f"cwd={ROOT}\n" in text
     assert "tz=UTC\n" in text
-    assert "arg=run\narg=--locked\narg=--no-sync\narg=canlah-healthcheck\narg=--config\n" in text
+    assert "arg=run\narg=--locked\narg=--no-sync\narg=website-healthcheck\narg=--config\n" in text
     assert f"arg={config}\n" in text
     assert not (ROOT / "SHOULD_NOT_EXIST").exists()
     assert result.stdout == result.stderr == ""

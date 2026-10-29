@@ -17,14 +17,14 @@ import httpx
 import pytest
 import yaml
 
-from canlah_healthcheck import main as entry
-from canlah_healthcheck.checker import checker
-from canlah_healthcheck.config.load_config import load_config
-from canlah_healthcheck.notifier.notifier import MailError
-from canlah_healthcheck.scheduler.process_lock import LockBusyError, process_lock
-from canlah_healthcheck.storage.storage import Storage, StorageError
+from website_healthcheck import main as entry
+from website_healthcheck.checker import checker
+from website_healthcheck.config.load_config import load_config
+from website_healthcheck.notifier.notifier import MailError
+from website_healthcheck.scheduler.process_lock import LockBusyError, process_lock
+from website_healthcheck.storage.storage import Storage, StorageError
 
-EXAMPLE = Path(__file__).resolve().parents[1] / "src/canlah_healthcheck/config/config.yaml.example"
+EXAMPLE = Path(__file__).resolve().parents[1] / "src/website_healthcheck/config/config.yaml.example"
 NOW = datetime(2026, 10, 18, tzinfo=UTC)
 SECRET = "main-test-only-password"
 
@@ -238,10 +238,23 @@ def test_default_config_location():
     assert entry.DEFAULT_CONFIG == EXAMPLE.with_name("config.yaml")
 
 
+def test_installed_help_uses_new_name_without_running_checks(tmp_path):
+    """从空目录调用真实新命令的帮助入口；无需配置，也不生成运行文件。"""
+    executable = Path(sys.executable).parent / "website-healthcheck"
+    result = subprocess.run(
+        [str(executable), "--help"], cwd=tmp_path,
+        capture_output=True, text=True, check=False, timeout=10,
+    )
+    assert result.returncode == 0
+    assert "usage: website-healthcheck" in result.stdout
+    assert "--config" in result.stdout
+    assert list(tmp_path.iterdir()) == []
+
+
 @pytest.mark.parametrize("busy, expected", [(False, 2), (True, 3)])
 def test_installed_entrypoint_from_other_directory(busy, expected, config_file, tmp_path):
     """真实子进程验证入口、跨目录和父辈保护；子进程不能终止持锁的测试父进程，不走 HTTP。"""
-    executable = Path(sys.executable).parent / "canlah-healthcheck"
+    executable = Path(sys.executable).parent / "website-healthcheck"
     config = load_config(config_file)
     if busy:
         with process_lock(config.storage.lock_path):

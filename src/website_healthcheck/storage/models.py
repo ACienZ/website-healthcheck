@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
-from canlah_healthcheck.checker.checker import CheckResult
+from website_healthcheck.checker.checker import CheckResult
 
 EventKind = Literal["check_failed", "missed", "interrupted", "schedule_changed"]
 DeliveryOutcome = Literal["success", "failed"]

@@ -1,7 +1,7 @@
 [project]
-name = "canlah-healthcheck"
-version = "0.1.1"
-description = "Canlah website healthcheck exercise"
+name = "website-healthcheck"
+version = "0.2.0"
+description = "Python website healthcheck exercise"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-canlah-healthcheck = "canlah_healthcheck.main:main"
+website-healthcheck = "website_healthcheck.main:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -24,7 +24,7 @@ build-backend = "hatchling.build"
 exclude = ["/.vscode"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/canlah_healthcheck"]
+packages = ["src/website_healthcheck"]
 
 [dependency-groups]
 dev = [

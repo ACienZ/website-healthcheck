@@ -2,9 +2,9 @@
 
 ## 当前能力与阅读顺序
 
-任务 2 对应 Issue #6、分支 `codex/6-page-checks-retry`。实现位于 `src/canlah_healthcheck/checker/checker.py`，`checker/__init__.py` 标识检查包；测试位于 `tests/test_checker.py`，通过 `from canlah_healthcheck.checker import checker` 导入。建议从 `run_checks` 读起，再看 `check_page` 的重试循环，最后看 `_check_once` 的单次请求。
+任务 2 对应 Issue #6、分支 `codex/6-page-checks-retry`。实现位于 `src/website_healthcheck/checker/checker.py`，`checker/__init__.py` 标识检查包；测试位于 `tests/test_checker.py`，通过 `from website_healthcheck.checker import checker` 导入。建议从 `run_checks` 读起，再看 `check_page` 的重试循环，最后看 `_check_once` 的单次请求。
 
-`run_checks(config, client)` 按配置顺序返回每个目标的 CheckResult；`check_page(target, settings, client)` 完成一个页面的全部尝试。调用方使用 `with httpx.Client() as client` 创建并关闭客户端，两个函数复用该客户端；每次响应由检查函数关闭。主程序入口为 `src/canlah_healthcheck/main.py`，步骤 5 已接入整轮执行，具体顺序见 [命令与调度说明](scheduling.md)。
+`run_checks(config, client)` 按配置顺序返回每个目标的 CheckResult；`check_page(target, settings, client)` 完成一个页面的全部尝试。调用方使用 `with httpx.Client() as client` 创建并关闭客户端，两个函数复用该客户端；每次响应由检查函数关闭。主程序入口为 `src/website_healthcheck/main.py`，步骤 5 已接入整轮执行，具体顺序见 [命令与调度说明](scheduling.md)。
 
 ## 请求与判定
 

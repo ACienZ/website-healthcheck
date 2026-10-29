@@ -11,8 +11,8 @@ from email.utils import format_datetime
 import smtplib
 import ssl
 
-from canlah_healthcheck.config.load_config import MailSettings
-from canlah_healthcheck.storage.models import Report, StoredCheck
+from website_healthcheck.config.load_config import MailSettings
+from website_healthcheck.storage.models import Report, StoredCheck
 
 # 只展示检查模块记录的固定原因，不把服务器响应正文或底层异常装进邮件。
 _FAILURE_LABELS = {
@@ -64,12 +64,12 @@ def _build_message(report: Report, settings: MailSettings) -> EmailMessage:
     # EmailMessage 负责 MIME 编码及邮件头折行，set_content 默认生成纯文本。
     # 正文只选择报告字段；不序列化 settings，避免密码等连接参数混入邮件。
     message = EmailMessage()
-    message["Subject"] = f"[Canlah Healthcheck] {len(report.events)} 条待通知事件"
+    message["Subject"] = f"[Website Healthcheck] {len(report.events)} 条待通知事件"
     message["From"] = settings.sender
     message["To"] = ", ".join(settings.recipients)
     message["Date"] = format_datetime(report.period_end.astimezone(UTC))
     lines = [
-        "Canlah Healthcheck 汇总告警",
+        "Website Healthcheck 汇总告警",
         f"统计区间：{_time(report.period_start)} 至 {_time(report.period_end)}",
         "",
         "待通知事件：",

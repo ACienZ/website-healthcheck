@@ -2,7 +2,7 @@
 
 ## 项目范围与事实来源
 
-- 本目录是供 GitHub 展示的 Python 网站健康检查练习，使用独立 Git 仓库；仓库、包与命令沿用 Canlah Healthcheck 名称。
+- 本目录是供 GitHub 展示的 Python 网站健康检查练习，使用独立 Git 仓库；仓库和命令为 website-healthcheck，Python 包为 website_healthcheck；原 Canlah 名称仅保留在历史资料和默认示例目标中。
 - 原始题目保留在 `refs/requirement.md`，仅作为历史需求来源；当前范围以已确认的 `docs/planning/` 设计和对应 Issue 为准。上级目录中的旧实现和旧验证记录仅供参考，不代表本项目的决策或验证结果。
 - 当前进度维护在 `TODO.md`，确认后的需求与设计维护在 `docs/planning/`，不要在本文件中重复维护动态进度。
 - 后续新增或修改代码使用中文文档字符串和必要注释，先用白话说明“这段在解决什么问题、为什么要这样做”，再解释判断条件、状态变化和边界；不机械复述每行代码。

@@ -6,15 +6,15 @@
 
 初版部署在单台 Linux，Mac 用于开发。需要 Python 3.12、uv、可写的本机磁盘，以及访问目标网站和 Gmail SMTP 的网络；不用消息队列或数据库服务器。SQLite 随 Python 提供，不需要额外启动服务。
 
-在仓库根目录执行 `uv sync --locked`，按锁文件安装依赖及已注册的 `canlah-healthcheck` 命令。后续每次更新代码和依赖，先暂停本项目的 cron，确认旧实例已经退出，再同步环境、运行测试并恢复调度。不要在旧实例工作期间替换它的运行环境。
+在仓库根目录执行 `uv sync --locked`，按锁文件安装依赖及已注册的 `website-healthcheck` 命令。后续每次更新代码和依赖，先暂停本项目的 cron，确认旧实例已经退出，再同步环境、运行测试并恢复调度。不要在旧实例工作期间替换它的运行环境。
 
-真实配置保存在 `src/canlah_healthcheck/config/config.yaml`。若它不存在才执行下面的复制；已有文件保留原样：
+真实配置保存在 `src/website_healthcheck/config/config.yaml`。若它不存在才执行下面的复制；已有文件保留原样：
 
 ```sh
-test -e src/canlah_healthcheck/config/config.yaml || cp src/canlah_healthcheck/config/config.yaml.example src/canlah_healthcheck/config/config.yaml
-chmod 600 src/canlah_healthcheck/config/config.yaml
-mkdir -p src/canlah_healthcheck/config/var
-chmod 700 src/canlah_healthcheck/config/var
+test -e src/website_healthcheck/config/config.yaml || cp src/website_healthcheck/config/config.yaml.example src/website_healthcheck/config/config.yaml
+chmod 600 src/website_healthcheck/config/config.yaml
+mkdir -p src/website_healthcheck/config/var
+chmod 700 src/website_healthcheck/config/var
 ```
 
 编辑真实配置中的 `mail.username`、`password`、`sender` 和 `recipients`。Gmail 使用 `smtp.gmail.com:465` 和应用专用密码；账户是否允许创建此密码取决于两步验证及组织策略，参考 [Google 官方说明](https://support.google.com/accounts/answer/185833)。示例占位值能通过字段校验，但不能用于真实认证。不要在终端输出、Issue 或截图里粘贴密码。
@@ -28,8 +28,8 @@ chmod 700 src/canlah_healthcheck/config/var
 在仓库根目录执行：
 
 ```sh
-uv run --locked canlah-healthcheck --help
-uv run --locked canlah-healthcheck --config "$PWD/src/canlah_healthcheck/config/config.yaml"
+uv run --locked website-healthcheck --help
+uv run --locked website-healthcheck --config "$PWD/src/website_healthcheck/config/config.yaml"
 echo "退出码：$?"
 ```
 
@@ -72,7 +72,7 @@ Cronie 可用生成片段的 `CRON_TZ=UTC`；不支持它的 Linux cron 需在�
 
 Mac 上可先从终端执行同一个 `/bin/sh scripts/run_healthcheck.sh /absolute/uv /absolute/config.yaml`。若以后安装 cron，用 `crontab -e` 保留原条目并追加任务；不要假定 Mac 支持 `CRON_TZ`。本项目周期都是 60 的因数，在当前 JST（UTC+9、无夏令时）下，分钟刻度与 UTC 对齐；其他时区需另行核对。
 
-项目位于 Desktop，后台 cron 可能受 macOS 文件隐私限制。建议先把诊断日志放到 `$HOME/Library/Logs/canlah-healthcheck/cron.log`，事先创建目录并限制权限。如果出现 `Operation not permitted`，再检查系统隐私设置中的完全磁盘访问权限和 `/usr/sbin/cron`；不要仅因终端能运行就认为后台也具备权限。参考 [Apple 文件访问控制](https://support.apple.com/guide/security/controlling-app-access-to-files-secddd1d86a6/web)。
+项目位于 Desktop，后台 cron 可能受 macOS 文件隐私限制。建议先把诊断日志放到 `$HOME/Library/Logs/website-healthcheck/cron.log`，事先创建目录并限制权限。如果出现 `Operation not permitted`，再检查系统隐私设置中的完全磁盘访问权限和 `/usr/sbin/cron`；不要仅因终端能运行就认为后台也具备权限。参考 [Apple 文件访问控制](https://support.apple.com/guide/security/controlling-app-access-to-files-secddd1d86a6/web)。
 
 保持网络与机器唤醒，必要时在另一终端运行 `caffeinate -i -t 1200`，阻止二十分钟内因空闲自动睡眠。合盖或其他原因仍可能使机器休眠；cron 不会在睡眠期间检查或发信。参考 [Apple 定时任务说明](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/ScheduledJobs.html)。
 
@@ -81,11 +81,11 @@ Mac 上可先从终端执行同一个 `/bin/sh scripts/run_healthcheck.sh /absol
 示例路径下可用以下只读 SQL 查看最近几轮和待通知事件；若使用自定义数据库路径，应替换命令中的路径。需要系统提供 `sqlite3` 命令行工具，程序自身不依赖此工具：
 
 ```sh
-sqlite3 -readonly -header -column src/canlah_healthcheck/config/var/healthcheck.sqlite3 \
+sqlite3 -readonly -header -column src/website_healthcheck/config/var/healthcheck.sqlite3 \
   'SELECT id, slot, started_at, finished_at, status FROM runs ORDER BY id DESC LIMIT 10;'
-sqlite3 -readonly -header -column src/canlah_healthcheck/config/var/healthcheck.sqlite3 \
+sqlite3 -readonly -header -column src/website_healthcheck/config/var/healthcheck.sqlite3 \
   "SELECT id, kind, range_start, range_end, notified_at FROM events WHERE notified_at IS NULL AND kind IN ('check_failed', 'missed', 'interrupted') ORDER BY id;"
-sqlite3 -readonly -header -column src/canlah_healthcheck/config/var/healthcheck.sqlite3 \
+sqlite3 -readonly -header -column src/website_healthcheck/config/var/healthcheck.sqlite3 \
   'SELECT id, attempted_at, outcome, error_code FROM deliveries ORDER BY id DESC LIMIT 10;'
 ```
 

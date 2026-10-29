@@ -8,7 +8,7 @@
 2. 漏跑区间、首次基线、异常中断和周期变更：已实现。
 3. 通知状态查询和记录：已实现；实际 SMTP 发送属于任务 4。
 
-模块位于 `src/canlah_healthcheck/storage/`：`schema.py` 定义七张表，`models.py` 定义 Event/StoredCheck/Report，`storage.py` 管理连接及读写，`__init__.py` 标识包。先读 Storage 类说明，再看各方法的编号步骤及 schema 中的表/字段说明。标准库 sqlite3 随 Python 提供，无新增 uv 依赖。
+模块位于 `src/website_healthcheck/storage/`：`schema.py` 定义七张表，`models.py` 定义 Event/StoredCheck/Report，`storage.py` 管理连接及读写，`__init__.py` 标识包。先读 Storage 类说明，再看各方法的编号步骤及 schema 中的表/字段说明。标准库 sqlite3 随 Python 提供，无新增 uv 依赖。
 
 Storage 使用类来让各个读写方法共用同一连接，并统一负责连接配置、事务和关闭。它接收 checker 已生成的结果，不执行 HTTP 或重试。处理顺序是：提交 running → 调用方检查页面 → 保存各页面最终结果 → 保存每次尝试 → 为最终失败创建事件 → 标记 completed 并统一提交。
 

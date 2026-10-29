@@ -11,11 +11,11 @@ import sys
 
 import httpx
 
-from canlah_healthcheck.checker.checker import run_checks
-from canlah_healthcheck.config.load_config import Config, ConfigError, load_config
-from canlah_healthcheck.notifier.notifier import MailError, send_alert
-from canlah_healthcheck.scheduler.process_lock import LockBusyError, LockError, process_lock
-from canlah_healthcheck.storage.storage import DuplicateRunError, Storage, StorageError
+from website_healthcheck.checker.checker import run_checks
+from website_healthcheck.config.load_config import Config, ConfigError, load_config
+from website_healthcheck.notifier.notifier import MailError, send_alert
+from website_healthcheck.scheduler.process_lock import LockBusyError, LockError, process_lock
+from website_healthcheck.storage.storage import DuplicateRunError, Storage, StorageError
 
 # 使用安装包内的配置位置，不依赖从哪个目录启动；不把真实配置打进分发包。
 DEFAULT_CONFIG = Path(__file__).resolve().parent / "config" / "config.yaml"
@@ -83,7 +83,7 @@ def _run_once(config: Config) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     """读取配置并执行一轮：0 网站健康、1 网站故障、2 执行错误、3 重复启动。"""
-    parser = argparse.ArgumentParser(description="执行一轮 Canlah 页面检查并汇总告警")
+    parser = argparse.ArgumentParser(description="执行一轮网站健康检查并汇总告警")
     parser.add_argument(
         "--config", type=Path, default=DEFAULT_CONFIG,
         help="配置文件路径；默认使用包内 config/config.yaml",

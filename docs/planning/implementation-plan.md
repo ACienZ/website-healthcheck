@@ -1,6 +1,6 @@
-# Canlah Healthcheck 实施设计
+# Website Healthcheck 实施设计
 
-设计日期：2026-10-17；更新日期：2026-10-18。状态：步骤 0–7 已全部合并，步骤 7 为 PR #19（76ada0b），Issue #11 已关闭、Project 为 Done；[v0.1.0](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.0) 已通过完整测试门禁并正式发布。模块说明见 [配置模块](../configuration.md)、[页面检查](../checker.md)、[SQLite 存储](../storage.md)、[汇总邮件](../notifier.md) 和 [命令调度](../scheduling.md)；统一使用与验收见 [部署说明](../deployment.md)、[测试说明](../testing.md) 和 [发布记录](../releases.md#v010-正式发布记录)。
+设计日期：2026-10-17；更新日期：2026-10-29。状态：步骤 0–7 已全部合并，步骤 7 为 PR #19（76ada0b），Issue #11 已关闭、Project 为 Done；[v0.1.0](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.0) 已通过完整测试门禁并正式发布。模块说明见 [配置模块](../configuration.md)、[页面检查](../checker.md)、[SQLite 存储](../storage.md)、[汇总邮件](../notifier.md) 和 [命令调度](../scheduling.md)；统一使用与验收见 [部署说明](../deployment.md)、[测试说明](../testing.md) 和 [发布记录](../releases.md#v010-正式发布记录)。
 
 ## 1. 目标、范围与技术选型
 
@@ -11,7 +11,7 @@
 | 职责 | 技术与理由 | 本轮状态 |
 | --- | --- | --- |
 | 环境 | Python 3.12、uv，沿用初始化配置 | 已有环境 |
-| 包布局 | src/canlah_healthcheck；Hatchling 构建后端，显式选择 src 包；console script 为 canlah-healthcheck，入口映射到 main.py 中的 main | 步骤 1 已合并；步骤 2 按用户要求调整入口文件名 |
+| 包布局 | src/website_healthcheck；Hatchling 构建后端，显式选择 src 包；console script 为 website-healthcheck，入口映射到 main.py 中的 main | 步骤 1 已合并；步骤 2 按用户要求调整入口文件名 |
 | 配置 | PyYAML safe_load + Pydantic v2；参考 GmailAutomate 的配置对象方式 | 步骤 1 已合并 |
 | HTTP | HTTPX 同步 Client；两个页面顺序执行，复用连接，便于 MockTransport 测试 | 步骤 2 已合并 |
 | 存储 | 标准库 sqlite3，事务管理，不引入 ORM | 步骤 3 已合并；步骤 5 已接入实际进程锁 |
@@ -26,7 +26,7 @@ HTTPX 的网络超时是连接/读/写/连接池阶段的等待上限，不是�
 
 ## 2. 配置与目录约定
 
-配置模块位于 `src/canlah_healthcheck/config/load_config.py`；同目录 `config.yaml` 为本地真实配置，必须忽略提交，`config.yaml.example` 仅含占位信息。对应测试为 `tests/test_load_config.py`。相对数据库和锁文件路径以配置文件所在目录为基准；示例对应 `src/canlah_healthcheck/config/var/`，只跟踪 `.gitkeep`，不跟踪运行数据。CLI 默认使用包内 config/config.yaml，允许 --config 显式指定；cron 显式使用绝对配置路径，启动脚本先切换仓库目录，并使用安装时确定的 uv 绝对路径。
+配置模块位于 `src/website_healthcheck/config/load_config.py`；同目录 `config.yaml` 为本地真实配置，必须忽略提交，`config.yaml.example` 仅含占位信息。对应测试为 `tests/test_load_config.py`。相对数据库和锁文件路径以配置文件所在目录为基准；示例对应 `src/website_healthcheck/config/var/`，只跟踪 `.gitkeep`，不跟踪运行数据。CLI 默认使用包内 config/config.yaml，允许 --config 显式指定；cron 显式使用绝对配置路径，启动脚本先切换仓库目录，并使用安装时确定的 uv 绝对路径。
 
 下表是配置规则，已提供包内 config.yaml.example。带“建议”的默认值随本文审阅，其余来自已确认需求。
 
@@ -74,7 +74,7 @@ HTTPX 的网络超时是连接/读/写/连接池阶段的等待上限，不是�
 
 CheckResult：目标 URL、最终成功标志、尝试列表；每次 Attempt 包含序号、UTC 开始时间、耗时秒数、最终 URL、状态码（网络错误时可空）、关键词结果（无响应时可空）及失败原因代码。失败原因可同时包含 status、latency、keyword；网络错误单独记录，不保存整页 HTML。
 
-步骤 2 具体约定：检查实现位于 `src/canlah_healthcheck/checker/checker.py`，独立的 checker 包包含 `__init__.py`；用冻结 dataclass 保存 Attempt 和 CheckResult，尝试集合为 tuple；`success` 是最后一次尝试无失败原因时为真的派生属性。原因代码为 status、latency、keyword、timeout、network；HTTPX 超时单独归类 timeout，其他 RequestError（含重定向循环）归类 network，不保存底层异常消息。读取中断时不评价不完整正文，keyword_found 为 None；已取得的响应头状态码和最终 URL 可保留。Client 由调用方创建并关闭，检查函数复用它并关闭每次响应；请求显式跟随重定向并采用配置中的阶段超时。主程序入口改名为 `src/canlah_healthcheck/main.py`，命令映射为 `canlah_healthcheck.main:main`，步骤 5 已接入完整调度入口。
+步骤 2 具体约定：检查实现位于 `src/website_healthcheck/checker/checker.py`，独立的 checker 包包含 `__init__.py`；用冻结 dataclass 保存 Attempt 和 CheckResult，尝试集合为 tuple；`success` 是最后一次尝试无失败原因时为真的派生属性。原因代码为 status、latency、keyword、timeout、network；HTTPX 超时单独归类 timeout，其他 RequestError（含重定向循环）归类 network，不保存底层异常消息。读取中断时不评价不完整正文，keyword_found 为 None；已取得的响应头状态码和最终 URL 可保留。Client 由调用方创建并关闭，检查函数复用它并关闭每次响应；请求显式跟随重定向并采用配置中的阶段超时。主程序入口改名为 `src/website_healthcheck/main.py`，命令映射为 `website_healthcheck.main:main`，步骤 5 已接入完整调度入口。
 
 Report：待通知事件 ID 集合、统计区间、网站最终失败/漏跑/异常中断明细，以及各目标最新检查状态。历史故障即使随后恢复也报告；仅重试期间失败而最终恢复的结果留在检查历史，不生成故障邮件事件。
 
@@ -142,7 +142,7 @@ Linux CI 必须运行完整 pytest；Mac 本地执行同一套测试。真实 HT
 
 以根目录 [TODO](../../TODO.md) 的 Issue 链接为准。步骤 0 文档审阅合并后，按 1 配置 → 2 检查 → 3 存储 → 4 邮件 → 5 集成调度 → 6 验收文档 → 7 发布逐项推进。每一步独立分支、Issue、PR；不提前实施后续任务。后续技术细节有变动先更新设计并与用户确认。
 
-初版全部步骤已完成。公开前的文档与 [MIT 许可证](../../LICENSE) 收尾已通过 Issue #20、PR #21 合并，署名 2026 ACienZ，包元数据与双语 README 已同步。旧 v0.1.0 快照没有许可证，因此 [Issue #22](https://github.com/ACienZ/canlah-healthcheck/issues/22) 准备 v0.1.1：版本与锁文件同步，合并后再推送新标签，实际发布状态以 [发布说明](../releases.md#v011-发布准备) 中的记录及 GitHub Release 为准。
+初版全部步骤已完成。公开前的文档与 [MIT 许可证](../../LICENSE) 收尾已通过 Issue #20、PR #21 合并，署名 2026 ACienZ，包元数据与双语 README 已同步。旧 v0.1.0 快照没有许可证，因此 [Issue #22](https://github.com/ACienZ/website-healthcheck/issues/22) 准备 v0.1.1：版本与锁文件同步，合并后再推送新标签，实际发布状态以 [发布说明](../releases.md#v011-发布准备) 中的记录及 GitHub Release 为准。
 
 
 ## 7. GitHub 展示定位调整（2026-10-29）
@@ -155,4 +155,15 @@ v0.1.1 已于 2026-10-18 正式发布，本轮已回读 Release 核实；上一�
 - 保留功能、技术栈、模块职责、流程、配置、部署和维护说明；安装后先通过 pytest 与 --help 体验，真实网站请求、邮件与 cron 部署另行说明。
 - 突出 HTTP 重试、SQLite 状态记录、漏跑/中断检测、汇总通知及隔离测试，明确单机练习的生产边界。仓库、包、命令、默认目标、版本、业务代码和接口保持不变。
 - 本轮只检查文档链接、章节锚点、双语命令、完整 diff 和空白错误；不新增测试、不运行真实网站、Gmail 或 cron。既有 271 项测试结果保留日期并标为历史证据。
-- 任务为 [Issue #24](https://github.com/ACienZ/canlah-healthcheck/issues/24)，关联分支 `codex/24-showcase-readme`，Project #12 使用 documentation / P1 / S / In progress；用户已于 2026-10-29 审阅本地文档并授权提交、推送和创建 PR；PR 由用户 review 后合并。
+- 任务为 [Issue #24](https://github.com/ACienZ/website-healthcheck/issues/24)，关联分支 `codex/24-showcase-readme`，Project #12 使用 documentation / P1 / S / In progress；用户已于 2026-10-29 审阅本地文档并授权提交、推送和创建 PR；PR 由用户 review 后合并。
+
+
+## 8. 完整改名与 v0.2.0 准备（2026-10-29）
+
+用户确认新名称为 website-healthcheck，范围覆盖 GitHub 仓库、Project 展示名、分发包、Python 包、命令、启动脚本、通知标题及现行文档。GitHub 仓库为 ACienZ/website-healthcheck，Project #12 更名为 Website Healthcheck Tracker，原可见性保持不变。
+
+- 分发包与命令使用 `website-healthcheck`，源码为 `src/website_healthcheck/`，导入为 `website_healthcheck`。旧包和命令名不再作为当前入口；旧发布标签保留原内容，不重写历史。
+- 名称变化影响安装及导入入口，因此本项目版本由 0.1.1 更新到 0.2.0，依赖版本保持不变。HTTP 默认 Canlah 目标/关键词、数据库结构和调度规则保持不变。
+- 本地真实配置与 var 目录随源码目录迁移，原文件不改写。部署迁移先暂停本项目旧 cron 并确认实例退出，再迁移配置/数据、运行 uv sync --locked 并更新命令与 cron 路径；不自动读取凭证或改写 crontab。
+- 验收包括完整 pytest、新命令 --help、Python 包导入、shell 语法、文档链接及双语命令、sdist/wheel 内容和独立安装检查。测试继续使用临时数据、回环 HTTP 和 SMTP 替身。
+- 关联 [Issue #26](https://github.com/ACienZ/website-healthcheck/issues/26) 与分支 `codex/26-rename-website-healthcheck`，Project 为 P1 / M / In progress。用户审阅合并后，整理本地分支与目录，再按已授权目标发布并核验 v0.2.0。

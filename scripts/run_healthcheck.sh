@@ -18,11 +18,11 @@ if [ ! -x "$1" ]; then
 fi
 
 # 从脚本自身位置定位仓库；项目路径有空格、中文时也按一个参数处理。
-canlah_repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-cd -- "$canlah_repo"
+healthcheck_repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+cd -- "$healthcheck_repo"
 export TZ=UTC
 export PYTHONIOENCODING=utf-8
 
 # 部署时先 uv sync --locked；定时运行不联网同步依赖，避免重复创建环境。
 # exec 用 uv 替换 shell，保留 Python 的 0/1/2/3 退出码及终止信号。
-exec "$1" run --locked --no-sync canlah-healthcheck --config "$2"
+exec "$1" run --locked --no-sync website-healthcheck --config "$2"

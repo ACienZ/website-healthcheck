@@ -1,8 +1,8 @@
-# Python 网站健康检查练习
+# Website Healthcheck — Python 网站健康检查练习
 
 [English](README.md) | 简体中文 · [MIT 许可证](LICENSE)
 
-Canlah Healthcheck 是一个单机 Python 工程练习，串联 HTTP 检查与重试、SQLite 执行记录、漏跑与中断检测、Gmail 汇总告警，以及 pytest / GitHub Actions 验证。每次启动只执行当前这一轮，五分钟后的下一轮由系统 cron 再次启动。
+Website Healthcheck 是一个单机 Python 工程练习，串联 HTTP 检查与重试、SQLite 执行记录、漏跑与中断检测、Gmail 汇总告警，以及 pytest / GitHub Actions 验证。每次启动只执行当前这一轮，五分钟后的下一轮由系统 cron 再次启动。
 
 可以从[安装与测试](#安装与首次运行)开始体验，无需访问真实网站或 Gmail。练习重点是模块职责划分、执行与通知状态的持久化、进程协调和隔离测试。当前实现尚未达到生产就绪，详见[当前边界](#当前边界与生产准备)。`docs/` 下的详细文档目前使用中文。[原始练习要求](refs/requirement.md)保留为历史资料，其中的简短 README 限制不再适用于当前展示文档。
 
@@ -13,6 +13,7 @@ Canlah Healthcheck 是一个单机 Python 工程练习，串联 HTTP 检查与�
 - [目录与模块职责](#目录与模块职责)
 - [一轮任务如何运行](#一轮任务如何运行)
 - [安装与首次运行](#安装与首次运行)
+- [从旧名称迁移](#从旧名称迁移)
 - [配置管理](#配置管理)
 - [每五分钟部署运行](#每五分钟部署运行)
 - [测试与持续集成](#测试与持续集成)
@@ -47,7 +48,7 @@ HTTP 等待超时与上述 5 秒判断分开配置：`request_timeout_seconds` �
 | 部分 | 选型与用途 |
 | --- | --- |
 | 语言与环境 | Python 3.12、uv；依赖声明在 pyproject.toml，版本锁定在 uv.lock |
-| 项目布局与构建 | src 包布局、Hatchling；安装后提供 canlah-healthcheck 命令 |
+| 项目布局与构建 | src 包布局、Hatchling；安装后提供 website-healthcheck 命令 |
 | 配置 | YAML、PyYAML、Pydantic v2；读取配置并验证类型、路径与数值范围 |
 | HTTP | HTTPX 同步客户端；顺序检查目标并复用连接 |
 | 数据库 | Python 标准库 sqlite3；本机文件，无需独立数据库服务或 ORM |
@@ -67,7 +68,7 @@ HTTP 等待超时与上述 5 秒判断分开配置：`request_timeout_seconds` �
 ├── TODO.md                       # 任务进度及验收记录
 ├── pyproject.toml / uv.lock      # 包配置、依赖与锁文件
 ├── refs/requirement.md           # 历史练习要求
-├── src/canlah_healthcheck/
+├── src/website_healthcheck/
 │   ├── main.py                  # 命令入口，串联下面各模块
 │   ├── config/
 │   │   ├── load_config.py       # 配置模型、读取、校验及路径解析
@@ -101,7 +102,7 @@ HTTP 等待超时与上述 5 秒判断分开配置：`request_timeout_seconds` �
 | notifier | send_alert | 把报告转换成邮件并发送，不决定间隔或写库 |
 | main | main、_run_once | 安排调用顺序、持有锁并给出退出码 |
 
-阅读代码可从 [main.py](src/canlah_healthcheck/main.py) 开始，再根据上表进入模块。更细的接口与设计见 [实施设计](docs/planning/implementation-plan.md)。
+阅读代码可从 [main.py](src/website_healthcheck/main.py) 开始，再根据上表进入模块。更细的接口与设计见 [实施设计](docs/planning/implementation-plan.md)。
 
 ## 一轮任务如何运行
 
@@ -130,8 +131,8 @@ HTTP 等待超时与上述 5 秒判断分开配置：`request_timeout_seconds` �
 先安装 Git、uv，并确保能下载 Python 及锁定依赖。获取项目后在仓库根目录执行：
 
 ```sh
-git clone https://github.com/ACienZ/canlah-healthcheck.git
-cd canlah-healthcheck
+git clone https://github.com/ACienZ/website-healthcheck.git
+cd website-healthcheck
 uv python install
 uv sync --locked
 ```
@@ -144,7 +145,7 @@ uv sync --locked
 
 ```sh
 uv run --locked pytest
-uv run --locked canlah-healthcheck --help
+uv run --locked website-healthcheck --help
 ```
 
 这个入口无需真实配置或 Gmail 凭证。测试使用临时数据库、HTTP / SMTP 替身、本机回环 HTTP 服务和子进程，不请求真实目标网站或发送邮件。安装依赖需要下载网络。覆盖范围见[测试与持续集成](#测试与持续集成)。
@@ -154,21 +155,21 @@ uv run --locked canlah-healthcheck --help
 如果还没有真实配置，再复制示例；保留已有配置：
 
 ```sh
-test -e src/canlah_healthcheck/config/config.yaml || cp src/canlah_healthcheck/config/config.yaml.example src/canlah_healthcheck/config/config.yaml
-chmod 600 src/canlah_healthcheck/config/config.yaml
-mkdir -p src/canlah_healthcheck/config/var
-chmod 700 src/canlah_healthcheck/config/var
+test -e src/website_healthcheck/config/config.yaml || cp src/website_healthcheck/config/config.yaml.example src/website_healthcheck/config/config.yaml
+chmod 600 src/website_healthcheck/config/config.yaml
+mkdir -p src/website_healthcheck/config/var
+chmod 700 src/website_healthcheck/config/var
 ```
 
 编辑 `config.yaml`，填写 Gmail 账号、应用专用密码、发件人和收件人。默认服务器为 `smtp.gmail.com:465`；示例密码只是占位值。运行前检查目标 URL 和判定规则。
 
 ```sh
-uv run --locked canlah-healthcheck --help
-uv run --locked canlah-healthcheck --config "$PWD/src/canlah_healthcheck/config/config.yaml"
+uv run --locked website-healthcheck --help
+uv run --locked website-healthcheck --config "$PWD/src/website_healthcheck/config/config.yaml"
 echo "退出码：$?"
 ```
 
-第二条命令会真实请求网站、写库，并在需要时发送邮件。不传 `--config` 时使用安装包内的 `config/config.yaml`；当前 uv 可编辑安装对应源码中的配置。入口是安装时注册的 `canlah-healthcheck` 命令，不是根目录的 `main.py`。
+第二条命令会真实请求网站、写库，并在需要时发送邮件。不传 `--config` 时使用安装包内的 `config/config.yaml`；当前 uv 可编辑安装对应源码中的配置。入口是安装时注册的 `website-healthcheck` 命令，不是根目录的 `main.py`。
 
 | 退出码 | 含义 |
 | --- | --- |
@@ -179,9 +180,17 @@ echo "退出码：$?"
 
 同一个五分钟时段内再次运行可能返回 3；历史漏跑被记录和汇总，不会单独让当前健康的网站检查返回 1。
 
+## 从旧名称迁移
+
+`0.2.0` 将分发包和命令从 `canlah-healthcheck` 改为 `website-healthcheck`，Python 导入从 `canlah_healthcheck` 改为 `website_healthcheck`。GitHub 仓库现为 [ACienZ/website-healthcheck](https://github.com/ACienZ/website-healthcheck)，旧版本快照仍保留原名。
+
+更新已有部署前，先暂停本项目旧 cron 条目并确认运行实例已停止。保留 `src/canlah_healthcheck/config/` 中的真实 `config.yaml` 和整个 `var/` 目录，再迁移到 `src/website_healthcheck/config/`，不要覆盖目标目录中已有的数据。相对存储路径保持不变；配置中若使用绝对路径，需要自行更新。数据库表结构无需转换。
+
+运行 `uv sync --locked` 替换已安装的包和命令。同步修改 Python 导入、启动器/配置/日志路径和 cron 条目，通过 `scripts/print_cron.py` 重新生成并审阅调度片段，再恢复运行。项目不会自动编辑 crontab 或迁移部署凭证；已有版本标签保持不变。
+
 ## 配置管理
 
-所有运行参数通过 [config.yaml.example](src/canlah_healthcheck/config/config.yaml.example) 对应的真实 YAML 管理。模型拒绝未知字段和不合法类型，错误输出不展示密码或完整原始输入。
+所有运行参数通过 [config.yaml.example](src/website_healthcheck/config/config.yaml.example) 对应的真实 YAML 管理。模型拒绝未知字段和不合法类型，错误输出不展示密码或完整原始输入。
 
 | 配置段 | 主要内容 |
 | --- | --- |
@@ -200,9 +209,9 @@ echo "退出码：$?"
 Linux 上先在目标路径准备配置、执行 `uv sync --locked`，再手动运行一次启动器。以下路径为模板，请替换为实际绝对路径：
 
 ```sh
-/bin/sh /srv/canlah-healthcheck/scripts/run_healthcheck.sh \
+/bin/sh /srv/website-healthcheck/scripts/run_healthcheck.sh \
   /absolute/uv \
-  /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml
+  /srv/website-healthcheck/src/website_healthcheck/config/config.yaml
 ```
 
 启动器会切换到仓库目录，设置 UTC 和 UTF-8，通过 `uv run --locked --no-sync` 执行已安装命令；它不会在每轮重新安装依赖。
@@ -212,7 +221,7 @@ Linux 上先在目标路径准备配置、执行 `uv sync --locked`，再手动�
 ```sh
 uv run --locked python scripts/print_cron.py \
   --uv /absolute/uv \
-  --config /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml \
+  --config /srv/website-healthcheck/src/website_healthcheck/config/config.yaml \
   --log /absolute/healthcheck.log
 ```
 
@@ -220,7 +229,7 @@ uv run --locked python scripts/print_cron.py \
 
 ```cron
 CRON_TZ=UTC
-*/5 * * * * /bin/sh /srv/canlah-healthcheck/scripts/run_healthcheck.sh /absolute/uv /srv/canlah-healthcheck/src/canlah_healthcheck/config/config.yaml >> /absolute/healthcheck.log 2>&1
+*/5 * * * * /bin/sh /srv/website-healthcheck/scripts/run_healthcheck.sh /absolute/uv /srv/website-healthcheck/src/website_healthcheck/config/config.yaml >> /absolute/healthcheck.log 2>&1
 ```
 
 用 `crontab -l` 查看现有任务，`crontab -e` 追加生成内容，保留其他任务。`*/5` 在每小时的 00、05、10 等分钟触发；日志父目录必须事先存在。不要把生成结果直接覆盖整个 crontab。
@@ -249,11 +258,13 @@ uv run --locked pytest tests/test_http_integration.py -v
 
 测试使用 pytest fixture、临时目录及 SQLite 隔离数据。单元测试使用 HTTP 和 SMTP 替身；本机 HTTP 集成真实建立回环连接，验证重定向、完整正文耗时、超时及重试；子进程测试验证真实锁、旧实例终止和命令入口。
 
-2026-10-18 的历史本地完整验证记录为 271 项通过；这不是本次文档调整新运行的测试结果。GitHub Actions 在 push 和 pull_request 时使用 Ubuntu/Python 3.12 执行 `uv sync --locked` 和 `uv run --locked pytest`；实际结果请查看对应提交的 Actions 或 PR Checks。测试不依赖真实 Canlah 网站或 Gmail，也不读取用户的真实配置。详细范围与证据见 [测试说明](docs/testing.md)。
+2026-10-29 针对 `0.2.0` 改名的本地完整验证为 272 项通过，包含新增的已安装命令帮助入口子进程检查；上一版本于 2026-10-18 记录了 271 项通过。GitHub Actions 在 push 和 pull_request 时使用 Ubuntu/Python 3.12 执行 `uv sync --locked` 和 `uv run --locked pytest`；实际结果请查看对应提交的 Actions 或 PR Checks。测试不依赖真实 Canlah 网站或 Gmail，也不读取用户的真实配置。详细范围与证据见 [测试说明](docs/testing.md)。
 
 ## 版本发布
 
-[v0.1.1](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.1) 已于 2026-10-18 发布，源码归档包含 MIT 许可证；已有 `v0.1.0` 快照没有许可证文件。后续版本沿用同一流程：版本 PR 合并并获得发版授权后，向 GitHub 推送对应标签。Actions 先确认标签提交已经进入 `main`，再安装锁定依赖并运行完整 pytest；全部通过后，才由独立 job 创建 GitHub Release 和自动生成的发布说明。
+`0.2.0` 正在为完整改名做发布准备，包含已合并的展示文档调整。改名 PR 审阅合并后再创建标签和 Release，见 [Issue #26](https://github.com/ACienZ/website-healthcheck/issues/26)；目前尚未发布。
+
+[v0.1.1](https://github.com/ACienZ/website-healthcheck/releases/tag/v0.1.1) 已于 2026-10-18 发布，源码归档包含 MIT 许可证；已有 `v0.1.0` 快照没有许可证文件。后续版本沿用同一流程：版本 PR 合并并获得发版授权后，向 GitHub 推送对应标签。Actions 先确认标签提交已经进入 `main`，再安装锁定依赖并运行完整 pytest；全部通过后，才由独立 job 创建 GitHub Release 和自动生成的发布说明。
 
 重复执行会保留已有 Release；版本不匹配、提交未合并、测试失败或查询失败都会阻止创建。使用 GitHub 提供的源码 ZIP/tar.gz，不上传 PyPI，也不额外上传 wheel。发版命令、失败排查及首次发布的授权步骤见 [发布说明](docs/releases.md)。
 

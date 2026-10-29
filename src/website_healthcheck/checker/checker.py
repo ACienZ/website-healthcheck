@@ -11,7 +11,7 @@ from typing import Literal
 
 import httpx
 
-from canlah_healthcheck.config.load_config import CheckSettings, Config
+from website_healthcheck.config.load_config import CheckSettings, Config
 
 # Literal 限定代码中使用的原因名称，便于后续存储和邮件模块统一处理。
 # timeout 单独表示等待超时；network 包括连接、协议、解码和重定向等请求错误。
