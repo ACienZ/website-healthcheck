@@ -1,6 +1,6 @@
 # 安装、运行与维护
 
-完整功能、模块和运行逻辑见 [中文项目说明](../PROJECT_GUIDE_CN.md) / [English guide](../PROJECT_GUIDE.md)；本文补充具体部署操作和维护细节。
+完整功能、模块和运行逻辑见 [中文 README](../README_CN.md) / [English README](../README.md)；本文补充具体部署操作和维护细节。
 
 ## 准备环境与配置
 
