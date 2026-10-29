@@ -4,7 +4,7 @@
 
 ## 1. 目标、范围与技术选型
 
-原始要求见 [requirement.md](../../refs/requirement.md)：检查首页和 playbook 页的状态码、耗时及 Canlah 关键词；任一检查最终失败返回非零；提供 5–10 行 README。用户追加配置管理、重试、SQLite、cron、Gmail 汇总告警、漏跑记录、pytest 及 GitHub Release。
+历史原始要求见 [requirement.md](../../refs/requirement.md)（当前展示文档不再受其 README 行数限制）：检查首页和 playbook 页的状态码、耗时及 Canlah 关键词；任一检查最终失败返回非零；提供 5–10 行 README。用户追加配置管理、重试、SQLite、cron、Gmail 汇总告警、漏跑记录、pytest 及 GitHub Release。
 
 初版单机运行，不使用消息队列、数据库服务器、网页界面或外部心跳服务。Mac 开发，Linux 部署。漏跑只记录并告警，不补跑历史任务；持续停机期间无法发信，恢复后识别。
 
@@ -136,10 +136,23 @@ Linux CI 必须运行完整 pytest；Mac 本地执行同一套测试。真实 HT
 
 步骤 7 增加 v* 标签触发的 Actions，检出标签、uv sync --locked、运行 pytest，核对标签版本等于 pyproject.toml version，并确认提交属于已合并 main，再以发布 job 的 contents: write 权限创建 Release 和自动生成说明。重复执行时已有 Release 则跳过创建。PR #19 合并并获得用户授权后，已为 76ada0b 推送 v0.1.0；实际 Linux Release workflow 的 271 项 pytest 通过，随后创建正式 Release。详细操作与证据见 [发布说明](../releases.md#v010-正式发布记录)。
 
-README 保持 5–10 行，集中回答每五分钟运行、故障告警和生产前补充；链接根目录 [PROJECT_GUIDE.md 英文版](../../PROJECT_GUIDE.md) 和 [PROJECT_GUIDE_CN.md 中文版](../../PROJECT_GUIDE_CN.md)，介绍功能、技术栈、模块、运行逻辑、安装配置和部署，并逐项解释生产准备建议。详细 cron、Gmail 配置、SQLite 维护及验证证据继续由 docs/ 文档维护。升级方案包括独立心跳监控、专业调度平台、告警抑制/升级策略、凭证管理和数据保留策略。
+初版历史交付中，README 保持 5–10 行，集中回答每五分钟运行、故障告警和生产前补充；根目录 PROJECT_GUIDE.md 和 PROJECT_GUIDE_CN.md 另行介绍功能、技术栈、模块、运行逻辑、安装配置和部署，并逐项解释生产准备建议。详细说明现已整合为[英文 README](../../README.md) 和[中文 README](../../README_CN.md)，原行数限制不再适用。详细 cron、Gmail 配置、SQLite 维护及验证证据继续由 docs/ 文档维护。升级方案包括独立心跳监控、专业调度平台、告警抑制/升级策略、凭证管理和数据保留策略。
 
 ## 6. 实施顺序与审阅
 
 以根目录 [TODO](../../TODO.md) 的 Issue 链接为准。步骤 0 文档审阅合并后，按 1 配置 → 2 检查 → 3 存储 → 4 邮件 → 5 集成调度 → 6 验收文档 → 7 发布逐项推进。每一步独立分支、Issue、PR；不提前实施后续任务。后续技术细节有变动先更新设计并与用户确认。
 
 初版全部步骤已完成。公开前的文档与 [MIT 许可证](../../LICENSE) 收尾已通过 Issue #20、PR #21 合并，署名 2026 ACienZ，包元数据与双语 README 已同步。旧 v0.1.0 快照没有许可证，因此 [Issue #22](https://github.com/ACienZ/canlah-healthcheck/issues/22) 准备 v0.1.1：版本与锁文件同步，合并后再推送新标签，实际发布状态以 [发布说明](../releases.md#v011-发布准备) 中的记录及 GitHub Release 为准。
+
+
+## 7. GitHub 展示定位调整（2026-10-29）
+
+v0.1.1 已于 2026-10-18 正式发布，本轮已回读 Release 核实；上一节的版本准备说明保留为历史记录。
+
+用户确认将项目定位为“Python 网站健康检查练习 / Python Website Healthcheck Exercise”，面向浏览 GitHub 的读者介绍能力、运行方式和工程实践。现行介绍移除求职申请语境；原始题目及开发验收记录保留为历史资料。默认 Canlah 目标如实标为原始练习示例。
+
+- 将两份 PROJECT_GUIDE 的完整技术内容分别整合到 README.md / README_CN.md，移除旧指南，统一语言切换、目录树及文档链接；不再受 5–10 行限制。
+- 保留功能、技术栈、模块职责、流程、配置、部署和维护说明；安装后先通过 pytest 与 --help 体验，真实网站请求、邮件与 cron 部署另行说明。
+- 突出 HTTP 重试、SQLite 状态记录、漏跑/中断检测、汇总通知及隔离测试，明确单机练习的生产边界。仓库、包、命令、默认目标、版本、业务代码和接口保持不变。
+- 本轮只检查文档链接、章节锚点、双语命令、完整 diff 和空白错误；不新增测试、不运行真实网站、Gmail 或 cron。既有 271 项测试结果保留日期并标为历史证据。
+- 任务为 [Issue #24](https://github.com/ACienZ/canlah-healthcheck/issues/24)，关联分支 `codex/24-showcase-readme`，Project #12 使用 documentation / P1 / S / In progress；用户已于 2026-10-29 审阅本地文档并授权提交、推送和创建 PR；PR 由用户 review 后合并。

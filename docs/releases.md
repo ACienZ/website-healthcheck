@@ -1,6 +1,6 @@
 # GitHub Release 发布
 
-项目版本为 `0.1.1`，对应标签 `v0.1.1`；版本 PR 合并后才推送标签，实际发布结果以仓库 Release 和对应 Actions 为准。使用 GitHub Actions 和 GitHub Release，不发布到 PyPI；下载内容使用 GitHub 为标签提供的源码 ZIP/tar.gz，不额外上传 wheel 或运行数据。
+项目版本为 `0.1.1`，[v0.1.1 Release](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.1) 已于 2026-10-18 发布，2026-10-29 已回读核实。下方“v0.1.1 发布准备”与具体发版命令保留为历史流程参考，不应重新创建或移动已发布标签。后续版本仍须在版本 PR 合并、验收并获得授权后发版。使用 GitHub Actions 和 GitHub Release，不发布到 PyPI；下载内容使用 GitHub 为标签提供的源码 ZIP/tar.gz，不额外上传 wheel 或运行数据。
 
 ## v0.1.1 发布准备
 

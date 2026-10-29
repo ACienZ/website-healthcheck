@@ -63,7 +63,7 @@ workflow 使用只读仓库权限和十分钟超时，不配置 Gmail Secrets，
 - `uv build --out-dir /tmp/canlah-task6-dist`：sdist 和 wheel 构建通过；源码归档包含 README、新测试和部署文档，wheel 包含主入口与 scheduler；归档检查确认未包含真实配置、运行数据库、锁、日志或本地 `.vscode/`。
 - 远端 Linux Actions：执行完整 pytest，实际通过情况以本步骤 PR Checks 为准。
 
-以上行数与构建记录对应首次本地验收。之后的文档审阅提供各 10 行的 [英文 README](../README.md) / [中文 README](../README_CN.md)，项目说明拆成 [英文版](../PROJECT_GUIDE.md) 与 [中文版](../PROJECT_GUIDE_CN.md)；本次仅检查文档链接、章节和双语命令一致性，不重复运行 pytest。
+以上行数与构建记录对应首次本地验收。之后在当时的文档审阅中提供各 10 行的英文 / 中文 README，并将详细说明拆成 PROJECT_GUIDE.md / PROJECT_GUIDE_CN.md；当时仅检查文档链接、章节和双语命令一致性，不重复运行 pytest。2026-10-29 的展示文档调整已将详细说明整合为当前[英文 README](../README.md) / [中文 README](../README_CN.md)，移除旧指南；历史行数不再描述当前首页。
 
 用户最终审阅后，保留其 README 语言入口和布局，重新构建至 `/tmp/canlah-task6-final-dist` 并检查归档：源码包包含最终中英文 README、项目指南、测试及部署文档，wheel 包含主入口和 scheduler；真实配置、运行数据库、锁、日志与 `.vscode/` 仍排除。同步检查最终文档链接、章节跳转及配置/命令参数。
 

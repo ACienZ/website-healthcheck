@@ -1,11 +1,12 @@
 # Canlah Healthcheck TODO
 
-更新日期：2026-10-18。初版步骤 0–7 已全部完成，v0.1.0 已发布；v0.1.1 正在准备，包含 MIT 许可证。
+更新日期：2026-10-29。初版步骤 0–7 已全部完成，v0.1.1 已发布并包含 MIT 许可证；当前进行 GitHub 展示定位与双语 README 整理。下方原始步骤与验收记录为历史资料，旧 README 行数不描述当前首页。
 
 - Project：[Canlah_healthcheck Tracker](https://github.com/users/ACienZ/projects/12/views/1)。
 - 初版发布：[步骤 7 #11](https://github.com/ACienZ/canlah-healthcheck/issues/11) 已关闭，[v0.1.0](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.0) 已发布。
 - 公开前收尾：[Issue #20](https://github.com/ACienZ/canlah-healthcheck/issues/20) 已关闭、PR #21 已合并，MIT 文件及包元数据已进入 main。
-- 新版本任务：[Issue #22](https://github.com/ACienZ/canlah-healthcheck/issues/22)，实施分支 `codex/22-release-v0.1.1`；审阅、合并与发布结果以该 Issue、Project 和实际 Release 为准。
+- 已完成版本任务：[Issue #22](https://github.com/ACienZ/canlah-healthcheck/issues/22) 已关闭，PR #23 已合并；[v0.1.1](https://github.com/ACienZ/canlah-healthcheck/releases/tag/v0.1.1) 于 2026-10-18 发布，2026-10-29 已回读核实。
+- 当前任务：[Issue #24](https://github.com/ACienZ/canlah-healthcheck/issues/24)，关联分支 `codex/24-showcase-readme`；documentation / P1 / S，Project 为 In progress，待用户审阅。
 - 设计：[实施设计与接口](docs/planning/implementation-plan.md)。
 - 保留 [Issue #3：注意git流程](https://github.com/ACienZ/canlah-healthcheck/issues/3) 及其现有状态、标签。
 
@@ -18,7 +19,7 @@
 
 ## 任务顺序
 
-各任务统一 P1。步骤 0–7 已 Done，均已由用户审阅合并；后续任务继续使用独立 Issue、分支和 PR。
+下表初版任务统一 P1。步骤 0–7 已 Done，均已由用户审阅合并；后续任务继续使用独立 Issue、分支和 PR。
 
 | 步骤 | Issue | 状态 | Size |
 | --- | --- | --- | --- |
@@ -166,4 +167,18 @@
 
 步骤 6 补充本机 HTTP 集成测试、业务 pytest CI 和使用说明。用户已确认 Mac 本地真实测试通过；自动测试不安装系统定时任务、不读取真实配置或发送真实邮件。步骤 7 的发布自动化已在 v0.1.0 标签上实际运行成功；Linux 生产主机部署仍需单独验收。
 
-环境复现：`uv sync --locked`。统一测试命令：`uv run --locked pytest`。合并提交的本地完整验证为 271 项通过，正式标签的 Linux Release CI 也为 271 项通过；其中 17 项发布单元测试使用临时 Git 仓库和假 gh，与真实发布运行分开记录。文档入口见 [中文说明](PROJECT_GUIDE_CN.md) / [English guide](PROJECT_GUIDE.md)，详见 [部署维护](docs/deployment.md)、[测试证据](docs/testing.md) 和 [发布记录](docs/releases.md)；[英文 README](README.md) 与 [中文 README](README_CN.md) 各 10 行。
+环境复现：`uv sync --locked`。统一测试命令：`uv run --locked pytest`。合并提交的本地完整验证为 271 项通过，正式标签的 Linux Release CI 也为 271 项通过；其中 17 项发布单元测试使用临时 Git 仓库和假 gh，与真实发布运行分开记录。当前文档入口见[中文 README](README_CN.md) / [English README](README.md)，详见 [部署维护](docs/deployment.md)、[测试证据](docs/testing.md) 和 [发布记录](docs/releases.md)。以上 271 项为 2026-10-18 的历史验证结果；README 各 10 行是当时的交付要求，当前首页已整合为完整介绍。
+
+
+## GitHub 展示文档整理（Issue #24）
+
+- [x] 2026-10-29 核对远端 main 与本地一致，基线为 `9f18aeb5177a5c6a19c19686d8f6a02e3464028d`；Issue #22 已关闭、Project 为 Done，v0.1.1 已发布。
+- [x] 创建 [Issue #24](https://github.com/ACienZ/canlah-healthcheck/issues/24)，加入 Project #12，设为 documentation / P1 / S / In progress；从 main 创建并检出关联分支 `codex/24-showcase-readme`。
+- [x] 将完整中英文指南整合为 README，移除旧指南；更新展示定位、测试体验入口、默认目标来源、历史验证日期及已发布版本说明。
+- [x] 更新协作约定、实施设计、部署/测试链接及历史题目说明，保留原始题目正文和历史验收记录。
+- [x] 检查 14 份 Markdown 中 120 处本地文件/章节链接，全部通过；9 组双语 shell/cron 示例一致（退出码提示文字翻译除外）；对照原指南审阅完整迁移差异，git diff --check 通过。
+- [x] 核实原始题目正文完整保留，旧指南文件已移除，现行 README 不含申请叙述；所有已跟踪改动均为 Markdown，Project 字段与关联分支已回读确认。
+- [x] 用户已审阅本地文档，并于 2026-10-29 授权提交、推送及创建 PR。
+- [ ] PR 由用户 review 后合并；合并后再关闭任务、同步 Project 并清理分支。
+
+本轮仅修改文档，不运行 pytest 或真实网站、SMTP、cron；未改代码、配置、版本与锁文件。未跟踪的 .vscode/ 保留，不纳入任务；未修改上级资料。
